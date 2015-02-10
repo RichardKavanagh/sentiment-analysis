@@ -1,0 +1,40 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+
+sourceCompatibility = 1.5
+version = '1.0'
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'Gradle Quickstart', 'Implementation-Version': version
+    }
+}
+
+repositories {       
+	mavenCentral()
+	maven {
+		url "http://clojars.org/repo"
+	}      
+}
+
+  
+dependencies {
+	compile 'org.apache.storm:storm-core:0.9.1-incubating'
+}
+
+
+configurations.all {
+ 
+}
+
+test {
+    systemProperties 'property': 'value'
+}
+
+uploadArchives {
+    repositories {
+       flatDir {
+           dirs 'repos'
+       }
+    }
+}
