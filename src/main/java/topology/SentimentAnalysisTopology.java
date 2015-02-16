@@ -19,7 +19,7 @@ public class SentimentAnalysisTopology {
         TopologyBuilder builder = new TopologyBuilder();
 
         builder.setSpout("logstash", new LogStashSpout() );
-        builder.setBolt("preprocessor", new TwitterFilterBolt() ).shuffleGrouping("spout");
+        builder.setBolt("preprocessor", new TwitterFilterBolt() ).shuffleGrouping("logstash");
 
         Config conf = new Config();
         LocalCluster cluster = new LocalCluster();
