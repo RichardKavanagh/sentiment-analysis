@@ -7,6 +7,9 @@ import java.io.InputStream;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.apache.commons.io.IOUtils;
+
+
 /*
  * A thread pool to handle incoming logstash connections.
  * 
@@ -85,6 +88,7 @@ public class ThreadPoolServer implements Runnable {
 	 */
 	private static class LogStashClient implements Runnable {
 
+		private static final String ENCODING = "UTF-8";
 		protected Socket clientSocket = null;
 
 		public LogStashClient(Socket clientSocket, String serverText) {
@@ -92,13 +96,12 @@ public class ThreadPoolServer implements Runnable {
 		}
 
 		public void run() {
-			
 			try {
-				InputStream input  = clientSocket.getInputStream();
-				long time = System.currentTimeMillis();
-				input.close();
-				System.out.println("Request processed: " + time);
-				
+				InputStream inputStream  = clientSocket.getInputStream();
+				String message = IOUtils.toString(inputStream, ENCODING);
+				inputStream.close();
+				//TODO Fix this with events.
+				MessageSingleton.getInstance().setMessage(message);
 			} catch (IOException err) {
 				throw new RuntimeException("Error closing server", err);
 			}
