@@ -26,7 +26,7 @@ public class SentimentAnalysisTopology {
 		LocalCluster cluster = new LocalCluster();
 		cluster.submitTopology(TOPOLOGY_NAME, conf, builder.createTopology());
 		launchServer();
-
+ 
 		cluster.killTopology(TOPOLOGY_NAME);
 		cluster.shutdown();
 	}

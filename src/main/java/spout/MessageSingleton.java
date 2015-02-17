@@ -6,6 +6,7 @@ package spout;
 public class MessageSingleton {
 	
 	private static MessageSingleton instance = null;
+	private boolean available = false;
 	private String message = "";
 	
 	/*
@@ -26,9 +27,15 @@ public class MessageSingleton {
 	
 	public void setMessage(String message) {
 		this.message = message;
+		available = true;
 	}
 	
 	public String gettMessage() {
+		available = false;
 		return message;
+	}
+	
+	public boolean availableMessage() {
+		return available;
 	}
 }

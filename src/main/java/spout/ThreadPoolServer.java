@@ -99,9 +99,8 @@ public class ThreadPoolServer implements Runnable {
 			try {
 				InputStream inputStream  = clientSocket.getInputStream();
 				String message = IOUtils.toString(inputStream, ENCODING);
-				inputStream.close();
-				//TODO Fix this with events.
 				MessageSingleton.getInstance().setMessage(message);
+				inputStream.close();
 			} catch (IOException err) {
 				throw new RuntimeException("Error closing server", err);
 			}

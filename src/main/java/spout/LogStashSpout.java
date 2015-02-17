@@ -23,11 +23,14 @@ public class LogStashSpout extends BaseRichSpout  {
 		this.collector = collector;
 	}
 
-	//TODO Fix this with events.
 	public void nextTuple() {
 		MessageSingleton ms = MessageSingleton.getInstance();
-		String message = ms.gettMessage();
-		collector.emit( new Values(message));
+		if (ms.availableMessage()) {
+			collector.emit( new Values(ms.gettMessage()));
+		}
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {}
 	}
 	
 	public void ack(Object id) {
