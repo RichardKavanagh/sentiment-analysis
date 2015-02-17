@@ -29,9 +29,9 @@ public class TwitterFilterBolt extends BaseBasicBolt {
 		
 		/*
 		 * Purpose:
-		 * Parse incoming JSON and get timestamp, user and text.
-		 * Disregard non-english tweets.
-		 * Gather hashtags if any.
+		 *  Parse incoming JSON and get timestamp, user and text.
+		 *  Disregard non-english tweets.
+		 *  Gather hashtags if any.
 		 */
 	}   
 

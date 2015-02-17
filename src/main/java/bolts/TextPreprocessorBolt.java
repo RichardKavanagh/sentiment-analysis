@@ -30,7 +30,7 @@ public class TextPreprocessorBolt extends BaseBasicBolt {
 		/*
 		 * Purpose:
 		 * 	Remove non-alpha characters and unsupported encoding from tweet text
-		 * and stemming/stop words/suffixes that are not useful.
+		 *  and stemming/stop words/suffixes that are not useful.
 		 */
 	}   
 

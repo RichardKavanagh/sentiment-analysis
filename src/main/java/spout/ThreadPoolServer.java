@@ -9,7 +9,6 @@ import java.util.concurrent.Executors;
 
 import org.apache.commons.io.IOUtils;
 
-
 /*
  * A thread pool to handle incoming logstash connections.
  * 
@@ -68,12 +67,10 @@ public class ThreadPoolServer implements Runnable {
 		}
 	}
 	
-	
 	private synchronized boolean isStopped() {
 		return this.isStopped;
 	}
 	
-
 	private void openServerSocket() {
 		try {
 			this.serverSocket = new ServerSocket(this.SERVER_PORT);
@@ -81,7 +78,6 @@ public class ThreadPoolServer implements Runnable {
 			throw new RuntimeException("Cannot open port " + SERVER_PORT, err);
 		}
 	}
-	
 	
 	/*
 	 * Inner static class to define worker for each logstash client.

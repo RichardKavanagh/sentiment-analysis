@@ -17,6 +17,7 @@ import backtype.storm.tuple.Values;
 public class LogStashSpout extends BaseRichSpout  {
 
 	private static final long serialVersionUID = -7279996556144453244L;
+	
 	private SpoutOutputCollector collector;
 
 	public void open(Map conf, TopologyContext context, SpoutOutputCollector collector ) {
@@ -40,6 +41,6 @@ public class LogStashSpout extends BaseRichSpout  {
 	}
 
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
-		declarer.declare(new Fields("json-tweet"));
+		declarer.declare(new Fields("tweet"));
 	}
 }

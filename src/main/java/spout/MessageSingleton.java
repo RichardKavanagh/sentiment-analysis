@@ -6,11 +6,12 @@ package spout;
 public class MessageSingleton {
 	
 	private static MessageSingleton instance = null;
+	
 	private boolean available = false;
 	private String message = "";
 	
 	/*
-	 *  Exists only to defeat instantiation.
+	 * Exists only to defeat instantiation.
 	 */
 	protected MessageSingleton() {
 	}

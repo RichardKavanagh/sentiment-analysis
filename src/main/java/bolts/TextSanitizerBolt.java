@@ -29,7 +29,7 @@ public class TextSanitizerBolt extends BaseBasicBolt {
 		
 		/*
 		 * Purpose:
-		 * 	Removal of stemming/stop words/suffixes that are not useful.
+		 *  Removal of stemming/stop words/suffixes that are not useful.
 		 */
 	}   
 
