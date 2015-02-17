@@ -11,13 +11,13 @@ import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
 
 /*
- * The filter bolt that recieves tweets from the logstash spout.
+ * The TextSanitizerBolt bolt that provides further sanitization by stripping away certain words.
  * 
  * @author Richard Kavanagh
  */
-public class TwitterFilterBolt extends BaseBasicBolt {
+public class TextSanitizerBolt extends BaseBasicBolt {
 
-	private static final long serialVersionUID = 7432280938048906081L;
+	private static final long serialVersionUID = -4349364405881264772L;
 	
 	private OutputCollector collector;
 
@@ -29,9 +29,7 @@ public class TwitterFilterBolt extends BaseBasicBolt {
 		
 		/*
 		 * Purpose:
-		 * Parse incoming JSON and get timestamp, user and text.
-		 * Disregard non-english tweets.
-		 * Gather hashtags if any.
+		 * 	Removal of stemming/stop words/suffixes that are not useful.
 		 */
 	}   
 
