@@ -25,8 +25,10 @@ public class SentimentAnalysisTopology {
 		
 		builder.setBolt("twitter_filter", new TwitterFilterBolt())
 			.shuffleGrouping("logstash_spout");
+		
 		builder.setBolt("preprocessor", new TextPreprocessorBolt())
 			.shuffleGrouping("twitter_filter");
+		
 		builder.setBolt("sanitizer", new TextSanitizerBolt())
 			.shuffleGrouping("preprocessor");
 		

@@ -31,7 +31,7 @@ public class MessageSingleton {
 		available = true;
 	}
 	
-	public String gettMessage() {
+	public String getMessage() {
 		available = false;
 		return message;
 	}

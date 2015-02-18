@@ -27,14 +27,14 @@ public class TextPreprocessorBolt extends BaseBasicBolt {
 
 	public void execute(Tuple input, BasicOutputCollector collector) {
 		
+		System.out.println(input.toString());
 		/*
 		 * Purpose:
 		 * 	Remove non-alpha characters and unsupported encoding from tweet text
-		 *  and stemming/stop words/suffixes that are not useful.
 		 */
 	}   
 
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
-		declarer.declare(new Fields("tweet_timestamp", "tweet_message", "tweet_user", "tweet_hashtags"));
+		declarer.declare(new Fields("tweet_message", "tweet_user", "tweet_hashtags"));
 	}
 }
