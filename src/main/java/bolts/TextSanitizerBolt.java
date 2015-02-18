@@ -27,6 +27,7 @@ public class TextSanitizerBolt extends BaseBasicBolt {
 
 	public void execute(Tuple input, BasicOutputCollector collector) {
 		
+		System.out.println(input.toString());
 		/*
 		 * Purpose:
 		 *  Removal of stemming/stop words/suffixes that are not useful.
@@ -34,6 +35,6 @@ public class TextSanitizerBolt extends BaseBasicBolt {
 	}   
 
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
-		declarer.declare(new Fields("tweet_message", "tweet_user", "tweet_hashtags"));
+		declarer.declare(new Fields("tweet_message", "tweet_user"));
 	}
 }

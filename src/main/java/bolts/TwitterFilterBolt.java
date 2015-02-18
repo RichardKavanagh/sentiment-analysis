@@ -25,8 +25,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class TwitterFilterBolt extends BaseBasicBolt {
 
 	private static final long serialVersionUID = 7432280938048906081L;
-	private static final String LANGUAGE = "lan";
-	private static final String ENGLISH = "en";
 	
 	private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -40,13 +38,12 @@ public class TwitterFilterBolt extends BaseBasicBolt {
 		String jsonData = input.getString(0);
 		try {
 			JsonNode root = objectMapper.readValue(jsonData, JsonNode.class);
-			String user, message, hashTags;
+			String user, message;
 
 			if (hasValues(root) && isEnglish(root)) {
 				user = root.get("user").asText();
-				message = root.get("message").textValue();
-				hashTags = getHashTags();
-				collector.emit(new Values(user, message, hashTags));
+				message = root.get("message").textValue() + getHashTags();
+				collector.emit(new Values(user, message));
 			}
 		}
 		catch(JsonParseException err) {
@@ -58,7 +55,7 @@ public class TwitterFilterBolt extends BaseBasicBolt {
 	}
 
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
-		declarer.declare(new Fields("tweet_message", "tweet_user", "tweet_hashtags"));
+		declarer.declare(new Fields("tweet_message", "tweet_user"));
 	}
 
 	private boolean hasValues(JsonNode root) {
@@ -76,6 +73,6 @@ public class TwitterFilterBolt extends BaseBasicBolt {
 	 * As hash tags are returned as part of the message we need to parse them.
 	 */
 	private String getHashTags() {
-		return "#hashtag";
+		return " #hashtag";
 	}
 }
