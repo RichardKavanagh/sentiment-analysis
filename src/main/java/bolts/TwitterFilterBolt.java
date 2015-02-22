@@ -34,6 +34,7 @@ public class TwitterFilterBolt extends BaseBasicBolt {
 		this.collector = collector;
 	}
 
+	//TODO We need some global tweet_id variable to track tweets.
 	public void execute(Tuple input, BasicOutputCollector collector) {
 		String jsonData = input.getString(0);
 		try {
@@ -67,6 +68,7 @@ public class TwitterFilterBolt extends BaseBasicBolt {
 	 */
 	private boolean isEnglish(JsonNode root) {
 		return true;
+		//TODO Twitter4J should have functionality to do this.
 	}
 
 	/*
