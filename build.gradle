@@ -23,6 +23,7 @@ dependencies {
 	compile 'com.fasterxml.jackson.core:jackson-core:2.5.0'
 	compile 'com.fasterxml.jackson.core:jackson-databind:2.5.0'
 	compile 'org.twitter4j:twitter4j-core:4.0.1'
+	compile 'org.twitter4j:twitter4j-stream:4.0.1'
 }
 
 
