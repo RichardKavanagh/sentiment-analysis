@@ -1,8 +1,5 @@
 package bolts;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
@@ -22,7 +19,6 @@ import backtype.storm.tuple.Values;
 public class NegativeWordsBolt extends BaseBasicBolt {
 
 	private static final long serialVersionUID = 42543534L;
-	private static final String NEGATIVE_WORDS = "negative-words.txt";
 
 	public void execute(Tuple input, BasicOutputCollector collector) {
 
@@ -30,7 +26,7 @@ public class NegativeWordsBolt extends BaseBasicBolt {
 		Set<String> negativeWords = new HashSet<String>();
 		
 		try {
-			negativeWords = getNegativeWords();
+			negativeWords = FileUtils.getWords(false);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -49,26 +45,5 @@ public class NegativeWordsBolt extends BaseBasicBolt {
 
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
 		declarer.declare(new Fields("tweet_message", "negative_score"));
-	}
-
-	/*
-	 * Reads the negative words from the resources folder and returns as a set.
-	 */
-	private Set<String> getNegativeWords() throws FileNotFoundException, IOException {
-
-		Set<String> set = new HashSet<String>();
-		BufferedReader bufferReader = new BufferedReader(new FileReader(NEGATIVE_WORDS));
-		try {
-			String line = bufferReader.readLine();
-
-			while (line != null) {
-				set.add(line);
-				set.add(System.lineSeparator());
-				line = bufferReader.readLine();
-			}
-		} finally {
-			bufferReader.close();
-		}
-		return set;
 	}
 }

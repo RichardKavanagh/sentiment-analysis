@@ -5,6 +5,8 @@ import spout.ThreadPoolServer;
 import backtype.storm.Config;
 import backtype.storm.LocalCluster;
 import backtype.storm.topology.TopologyBuilder;
+import backtype.storm.tuple.Fields;
+import bolts.JoinSentimentsBolt;
 import bolts.NegativeWordsBolt;
 import bolts.PositiveWordsBolt;
 import bolts.TextPreprocessorBolt;
@@ -39,6 +41,10 @@ public class SentimentAnalysisTopology {
 			
 		builder.setBolt("negative_bag_of_words", new NegativeWordsBolt())
 			.shuffleGrouping("sanitizer");
+		
+		builder.setBolt("positive_negative_join", new JoinSentimentsBolt())
+			.fieldsGrouping("positive_bag_of_words", new Fields("tweet_id"))
+			.fieldsGrouping("negative_bag_of_words", new Fields("tweet_id"));
 		
 		Config conf = new Config();
 		LocalCluster cluster = new LocalCluster();
