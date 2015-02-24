@@ -15,21 +15,15 @@ import twitter4j.conf.ConfigurationBuilder;
  */
 public class TwitterRiver {
 
-	private ConfigurationBuilder configBuilder;
+	private static ConfigurationBuilder configBuilder;
 
 	public static void main(String[] args) throws InterruptedException {
 		TwitterRiver stream = new TwitterRiver();
+		setConfiguration();
 		stream.loadMenu();
 	}
 
 	public void loadMenu() throws InterruptedException {
-
-		configBuilder = new ConfigurationBuilder();
-		configBuilder.setDebugEnabled(true);
-		configBuilder.setOAuthConsumerKey("n6sg6ModebIgaYGyxK55Pgzvc");
-		configBuilder.setOAuthConsumerSecret("s0n1IpItHmZ2tOkTe2SqG1lA1yutkKvcTfcx5VCQk3sMLz4JNh");
-		configBuilder.setOAuthAccessToken("2426945665-vOvmXATJyXA1QGMvmaVGTC8MNfiGKbq2RU2xJFt");
-		configBuilder.setOAuthAccessTokenSecret("WfLFS2V7BaD1oF8TkVDJ4jTAGVuuShaP6yLN0ngzxnaeP");
 
 		TwitterStream twitterStream = new TwitterStreamFactory(configBuilder.build()).getInstance();
 		StatusListener listener = new StatusListener() {
@@ -57,13 +51,21 @@ public class TwitterRiver {
 				err.printStackTrace();
 			}
 		};
-
+		
 		FilterQuery filterQuery = new FilterQuery();
 		String keywords[] = {"ireland"};
 
 		filterQuery.track(keywords);
 		twitterStream.addListener(listener);
 		twitterStream.filter(filterQuery);
+	}
 
+	private static void setConfiguration() {
+		configBuilder = new ConfigurationBuilder();
+		configBuilder.setDebugEnabled(true);
+		configBuilder.setOAuthConsumerKey("n6sg6ModebIgaYGyxK55Pgzvc");
+		configBuilder.setOAuthConsumerSecret("s0n1IpItHmZ2tOkTe2SqG1lA1yutkKvcTfcx5VCQk3sMLz4JNh");
+		configBuilder.setOAuthAccessToken("2426945665-vOvmXATJyXA1QGMvmaVGTC8MNfiGKbq2RU2xJFt");
+		configBuilder.setOAuthAccessTokenSecret("WfLFS2V7BaD1oF8TkVDJ4jTAGVuuShaP6yLN0ngzxnaeP");
 	}
 }
