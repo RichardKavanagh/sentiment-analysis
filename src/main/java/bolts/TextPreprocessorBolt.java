@@ -33,29 +33,11 @@ public class TextPreprocessorBolt extends BaseBasicBolt {
 	public void execute(Tuple input, BasicOutputCollector collector) {
 		String message = input.getString(input.fieldIndex("tweet_message"));
 		String user = input.getString(input.fieldIndex("tweet_user"));
-		message = clean(message);
+		message = message.replaceAll("[^a-zA-Z\\s]", "").trim().toLowerCase();
 		collector.emit(new Values(user, message));
 	}
 
-	/**
-	 * The method first normalizes a String, then converts it to lowercase and removes ASCII characters, which might be problematic
-	 * all whitespaces, dots ('.') ,(semi-)colons (';' and ':'), equals ('=') ,ampersands ('&')
-	 * slashes ('/') and angle brackets ('<' and '>').
-	 */
-	private String clean(String input) {
-		String result = normalize(input);
-		result = StringUtils.lowerCase(result);
-		result = result.replaceAll("[\\s.:;&=<>/]", "");
-		return result;
-	}
-
-	private String normalize(String input) {
-		input = Normalizer.normalize(input, Form.NFD).replaceAll("[^\\p{ASCII}]", "");
-		return input;
-	}
-	
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
 		declarer.declare(new Fields("tweet_message", "tweet_user"));
 	}
 }
-
