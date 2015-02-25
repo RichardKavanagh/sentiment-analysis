@@ -25,26 +25,32 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class TwitterFilterBolt extends BaseBasicBolt {
 
 	private static final long serialVersionUID = 7432280938048906081L;
+	private static final String LANGUAGE = "lan";
+	private static final String ENGLISH = "en";
+	private static final String HASHTAGS = "hashtagEntities"; 
 	
 	private ObjectMapper objectMapper = new ObjectMapper();
-
 	private OutputCollector collector;
 
 	public void prepare(Map conf, TopologyContext context, OutputCollector collector) {
 		this.collector = collector;
 	}
 
-	//TODO We need some global tweet_id variable to track tweets.
+	//TODO Replace .get with .getFieldName methods by passing status not json.
 	public void execute(Tuple input, BasicOutputCollector collector) {
 		String jsonData = input.getString(0);
 		try {
 			JsonNode root = objectMapper.readValue(jsonData, JsonNode.class);
-			String user, message;
+			String user, message, id;
 
 			if (hasValues(root) && isEnglish(root)) {
+				id = root.get("id").asText();
 				user = root.get("user").asText();
-				message = root.get("message").textValue() + getHashTags();
-				collector.emit(new Values(user, message));
+				message = root.get("message").textValue() + getHashTags(root);
+				
+				System.out.println(id + "," + user + "," + message);
+				
+				collector.emit(new Values(id, user, message));
 			}
 		}
 		catch(JsonParseException err) {
@@ -56,25 +62,23 @@ public class TwitterFilterBolt extends BaseBasicBolt {
 	}
 
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
-		declarer.declare(new Fields("tweet_message", "tweet_user"));
+		declarer.declare(new Fields("tweet_id", "tweet_message", "tweet_user"));
 	}
 
 	private boolean hasValues(JsonNode root) {
 		return root.get("user") != null && root.get("message") != null;
 	}
 
-	/*
-	 * Determines if a tweet is primarily english.
-	 */
 	private boolean isEnglish(JsonNode root) {
-		return true;
-		//TODO Twitter4J should have functionality to do this.
+		 return (root.get(LANGUAGE) != null && ENGLISH.equals(root.get(LANGUAGE).textValue()));
 	}
 
-	/*
-	 * As hash tags are returned as part of the message we need to parse them.
-	 */
-	private String getHashTags() {
-		return " #hashtag";
+	private String getHashTags(JsonNode root) {
+		if (root.get(HASHTAGS) == null) {
+			return "";
+		}
+		else {
+			return root.get(HASHTAGS).asText();
+		}
 	}
 }

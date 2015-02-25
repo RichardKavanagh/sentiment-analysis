@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.mozilla.universalchardet.UniversalDetector;
+
 /*
  * A general File utilites class to handle multiple file related methods.
  * 
@@ -14,13 +16,13 @@ import java.util.Set;
  */
 public class FileUtils {
 	
-	
 	private static final String POSITIVE_WORDS = "positive-words.txt";
 	private static final String NEGATIVE_WORDS = "negative-words.txt";
-
 	
-	public static Set<String> getWords(boolean positiveWords) throws FileNotFoundException, IOException {
+	private static final String SUPPORTED_ENCODING = "UTF-8";
+	private static UniversalDetector detector = new UniversalDetector(null);
 
+	public static Set<String> getWords(boolean positiveWords) throws FileNotFoundException, IOException {
 		Set<String> set = new HashSet<String>();
 		BufferedReader bufferReader;
 		if(positiveWords) {
@@ -41,5 +43,28 @@ public class FileUtils {
 			bufferReader.close();
 		}
 		return set;
+	}
+	
+	public static boolean supportedEncoding(String tweet) {
+
+		byte[] bytes = tweet.getBytes();
+		detector.handleData(bytes, 0, bytes.length);
+		detector.dataEnd();
+
+		String encoding = detector.getDetectedCharset();
+		detector.reset();
+
+		if (encoding == null) {
+			System.out.println("Null encoding issue");
+			return false;
+		}
+		else if (encoding.equals(SUPPORTED_ENCODING)) {
+			System.out.println(encoding);
+			return true;
+		}
+		else {
+			System.out.println("Unsupported encoding issue");
+			return false;
+		}
 	}
 }

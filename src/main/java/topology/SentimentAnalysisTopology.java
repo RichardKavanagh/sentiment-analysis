@@ -11,6 +11,7 @@ import bolts.NegativeWordsBolt;
 import bolts.PositiveWordsBolt;
 import bolts.TextPreprocessorBolt;
 import bolts.TextSanitizerBolt;
+import bolts.TweetInstanceBolt;
 import bolts.TwitterFilterBolt;
 
 /*
@@ -27,9 +28,12 @@ public class SentimentAnalysisTopology {
 
 		builder.setSpout("logstash_spout", new LogStashSpout());
 		
-		builder.setBolt("twitter_filter", new TwitterFilterBolt())
-			.shuffleGrouping("logstash_spout");
+		builder.setBolt("instance_filter", new TweetInstanceBolt())
+		.shuffleGrouping("logstash_spout");
 		
+		builder.setBolt("twitter_filter", new TwitterFilterBolt())
+			.shuffleGrouping("instance_filter");
+		/*
 		builder.setBolt("preprocessor", new TextPreprocessorBolt())
 			.shuffleGrouping("twitter_filter");
 		
@@ -45,7 +49,7 @@ public class SentimentAnalysisTopology {
 		builder.setBolt("positive_negative_join", new JoinSentimentsBolt())
 			.fieldsGrouping("positive_bag_of_words", new Fields("tweet_id"))
 			.fieldsGrouping("negative_bag_of_words", new Fields("tweet_id"));
-		
+		*/
 		Config conf = new Config();
 		LocalCluster cluster = new LocalCluster();
 		cluster.submitTopology(TOPOLOGY_NAME, conf, builder.createTopology());

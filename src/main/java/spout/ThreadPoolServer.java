@@ -84,7 +84,7 @@ public class ThreadPoolServer implements Runnable {
 	 */
 	private static class LogStashClient implements Runnable {
 
-		private static final String ENCODING = "UTF-8";
+		private static final String SUPPORTED_ENCODING = "UTF-8";
 		protected Socket clientSocket = null;
 
 		public LogStashClient(Socket clientSocket, String serverText) {
@@ -94,7 +94,7 @@ public class ThreadPoolServer implements Runnable {
 		public void run() {
 			try {
 				InputStream inputStream  = clientSocket.getInputStream();
-				String message = IOUtils.toString(inputStream, ENCODING);
+				String message = IOUtils.toString(inputStream);
 				MessageSingleton.getInstance().setMessage(message);
 				inputStream.close();
 			} catch (IOException err) {

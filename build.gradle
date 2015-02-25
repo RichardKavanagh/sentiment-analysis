@@ -24,6 +24,8 @@ dependencies {
 	compile 'com.fasterxml.jackson.core:jackson-databind:2.5.0'
 	compile 'org.twitter4j:twitter4j-core:4.0.1'
 	compile 'org.twitter4j:twitter4j-stream:4.0.1'
+	compile 'com.googlecode.juniversalchardet:juniversalchardet:1.0.3'
+	compile 'com.ibm.icu:icu4j:51.1'
 }
 
 

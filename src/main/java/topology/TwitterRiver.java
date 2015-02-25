@@ -1,5 +1,8 @@
 package topology;
 
+import java.io.IOException;
+
+import spout.TwitterRiverClient;
 import twitter4j.FilterQuery;
 import twitter4j.StallWarning;
 import twitter4j.Status;
@@ -10,15 +13,18 @@ import twitter4j.TwitterStreamFactory;
 import twitter4j.conf.ConfigurationBuilder;
 
 /*
+ * Access point to public twitter streams.
  * 
  * @author Richard Kavanagh.
  */
 public class TwitterRiver {
 
 	private static ConfigurationBuilder configBuilder;
+	private static TwitterRiverClient client;
 
 	public static void main(String[] args) throws InterruptedException {
 		TwitterRiver stream = new TwitterRiver();
+		client = new TwitterRiverClient("127.0.0.1", 5555);
 		setConfiguration();
 		stream.loadMenu();
 	}
@@ -29,7 +35,11 @@ public class TwitterRiver {
 		StatusListener listener = new StatusListener() {
 
 			public void onStatus(Status status) {
-		        //TODO send status to Logstash.
+				try {
+					client.sendToPort(status.toString());
+				} catch (IOException e) {
+					System.out.println("Error sending status to Logstash.");
+				}
 			}
 
 			public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {
@@ -51,9 +61,9 @@ public class TwitterRiver {
 				err.printStackTrace();
 			}
 		};
-		
+
 		FilterQuery filterQuery = new FilterQuery();
-		String keywords[] = {"ireland"};
+		String keywords[] = { "ireland" };
 
 		filterQuery.track(keywords);
 		twitterStream.addListener(listener);
