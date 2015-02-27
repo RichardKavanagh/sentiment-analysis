@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import twitter4j.Status;
 import backtype.storm.task.OutputCollector;
 import backtype.storm.task.TopologyContext;
 import backtype.storm.topology.BasicOutputCollector;
@@ -37,6 +38,8 @@ public class TwitterFilterBolt extends BaseBasicBolt {
 	}
 
 	public void execute(Tuple input, BasicOutputCollector collector) {
+		
+		//TODO Status tweet = (Status) input.getValueByField("tweet"); update this bolt.
 		
 		String jsonData = input.getString(0);
 		try {

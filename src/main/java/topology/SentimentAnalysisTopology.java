@@ -2,6 +2,7 @@ package topology;
 
 import spout.LogStashSpout;
 import spout.ThreadPoolServer;
+import twitter4j.Status;
 import backtype.storm.Config;
 import backtype.storm.LocalCluster;
 import backtype.storm.topology.TopologyBuilder;
@@ -27,14 +28,11 @@ public class SentimentAnalysisTopology {
 		TopologyBuilder builder = new TopologyBuilder();
 
 		builder.setSpout("logstash_spout", new LogStashSpout());
-		
-		builder.setBolt("tweet_preprocessor", new TweetPreprocessorBolt())
+
+		builder.setBolt("instance_filter", new TweetInstanceBolt())
 		.shuffleGrouping("logstash_spout");
 		
 		/*
-		builder.setBolt("instance_filter", new TweetInstanceBolt())
-		.shuffleGrouping("tweet_preprocessor");
-		
 		builder.setBolt("twitter_filter", new TwitterFilterBolt())
 			.shuffleGrouping("instance_filter");
 		
