@@ -2,9 +2,11 @@ package spout;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-import bolts.FileUtils;
+import topology.FileUtils;
+import twitter4j.Status;
 
 /*
  * Client class to send messages from TwitterRiver to Logstash.
@@ -21,13 +23,13 @@ public class TwitterRiverClient {
 		this.port = port;
 	}
 
-	private DataOutputStream output;
+	private ObjectOutputStream output;
 
-	public synchronized void sendToPort(String tweet) throws IOException {
+	public synchronized void writeToTopology(Status status) throws IOException {
 		Socket socket = new Socket(hostname, port);
-		output = new DataOutputStream(socket.getOutputStream());
-		if (FileUtils.supportedEncoding(tweet)) {
-			output.writeBytes(tweet);
+		output = new ObjectOutputStream(socket.getOutputStream());
+		if (FileUtils.supportedEncoding(status.toString())) {
+			output.writeObject(status);
 		}
 		socket.close();
 	}

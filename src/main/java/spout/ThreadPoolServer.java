@@ -1,13 +1,13 @@
 package spout;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.apache.commons.io.IOUtils;
+import twitter4j.Status;
 
 /*
  * A thread pool to handle incoming logstash connections.
@@ -18,11 +18,10 @@ public class ThreadPoolServer implements Runnable {
 
 	protected int SERVER_PORT = 0;
 	protected int THREAD_AMOUNT = 20;
-	
+
 	protected ServerSocket serverSocket = null;
 	protected Thread runningThread = null;
 	protected boolean isStopped = false;
-	
 
 	protected ExecutorService threadPool = Executors.newFixedThreadPool(THREAD_AMOUNT);
 
@@ -66,11 +65,11 @@ public class ThreadPoolServer implements Runnable {
 			throw new RuntimeException("Error closing server", err);
 		}
 	}
-	
+
 	private synchronized boolean isStopped() {
 		return this.isStopped;
 	}
-	
+
 	private void openServerSocket() {
 		try {
 			this.serverSocket = new ServerSocket(this.SERVER_PORT);
@@ -78,13 +77,12 @@ public class ThreadPoolServer implements Runnable {
 			throw new RuntimeException("Cannot open port " + SERVER_PORT, err);
 		}
 	}
-	
+
 	/*
 	 * Inner static class to define worker for each logstash client.
 	 */
 	private static class LogStashClient implements Runnable {
 
-		private static final String SUPPORTED_ENCODING = "UTF-8";
 		protected Socket clientSocket = null;
 
 		public LogStashClient(Socket clientSocket, String serverText) {
@@ -93,12 +91,18 @@ public class ThreadPoolServer implements Runnable {
 
 		public void run() {
 			try {
-				InputStream inputStream  = clientSocket.getInputStream();
-				String message = IOUtils.toString(inputStream);
-				MessageSingleton.getInstance().setMessage(message);
+				ObjectInputStream inputStream  = new ObjectInputStream(clientSocket.getInputStream());
+				Status status = (Status) inputStream.readObject();
+				if (status != null) {
+					MessageSingleton.getInstance().setMessage(status);
+				}
 				inputStream.close();
+				
 			} catch (IOException err) {
-				throw new RuntimeException("Error closing server", err);
+				/* We swallow the EOF exception here as it is defined behaviour for readObject method. */
+			}
+			catch (ClassNotFoundException err) {
+				err.printStackTrace();
 			}
 		}
 	}

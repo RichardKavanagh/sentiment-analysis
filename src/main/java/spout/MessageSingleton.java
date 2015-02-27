@@ -1,5 +1,7 @@
 package spout;
 
+import twitter4j.Status;
+
 /*
  * @author Richard Kavanagh.
  */
@@ -8,7 +10,7 @@ public class MessageSingleton {
 	private static MessageSingleton instance = null;
 	
 	private boolean available = false;
-	private String message = "";
+	private Status message;
 	
 	/*
 	 * Exists only to defeat instantiation.
@@ -26,12 +28,12 @@ public class MessageSingleton {
 		return instance;
 	}
 	
-	public void setMessage(String message) {
+	public void setMessage(Status message) {
 		this.message = message;
 		available = true;
 	}
 	
-	public String getMessage() {
+	public Status getMessage() {
 		available = false;
 		return message;
 	}

@@ -36,8 +36,8 @@ public class TwitterFilterBolt extends BaseBasicBolt {
 		this.collector = collector;
 	}
 
-	//TODO Replace .get with .getFieldName methods by passing status not json.
 	public void execute(Tuple input, BasicOutputCollector collector) {
+		
 		String jsonData = input.getString(0);
 		try {
 			JsonNode root = objectMapper.readValue(jsonData, JsonNode.class);
@@ -47,17 +47,14 @@ public class TwitterFilterBolt extends BaseBasicBolt {
 				id = root.get("id").asText();
 				user = root.get("user").asText();
 				message = root.get("message").textValue() + getHashTags(root);
-				
-				System.out.println(id + "," + user + "," + message);
-				
 				collector.emit(new Values(id, user, message));
 			}
 		}
 		catch(JsonParseException err) {
-			System.out.println("Malformed JSON entered");
+			System.out.println("Malformed JSON entered, dropping tweet.");
 		}
 		catch(IOException err) {
-			System.out.println("IO error while filtering tweets");
+			System.out.println("IO error while filtering tweets.");
 		}
 	}
 

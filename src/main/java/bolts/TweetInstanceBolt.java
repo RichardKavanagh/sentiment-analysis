@@ -28,7 +28,10 @@ public class TweetInstanceBolt extends BaseBasicBolt {
 	private HashSet<String> hashSet = new HashSet<String>();
 
 	public void execute(Tuple input, BasicOutputCollector collector) {
+		
+		// jsonData is empty when we get this far due to encoding errors.
 		String jsonData = input.getString(0);
+		
 		JsonNode root;
 		try {
 			root = objectMapper.readValue(jsonData, JsonNode.class);
@@ -44,7 +47,7 @@ public class TweetInstanceBolt extends BaseBasicBolt {
 			System.out.println("Malformed JSON entered");
 		}
 		catch(IOException err) {
-			System.out.println("IO error while filtering tweets");
+			System.out.println("IO error while filtering tweets." + err.getMessage());
 		}
 	}
 

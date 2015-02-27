@@ -21,10 +21,13 @@ public class TwitterRiver {
 
 	private static ConfigurationBuilder configBuilder;
 	private static TwitterRiverClient client;
+	
+	private static String HOST_NAME = "127.0.0.1";
+	private static int PORT = 7777;
 
 	public static void main(String[] args) throws InterruptedException {
 		TwitterRiver stream = new TwitterRiver();
-		client = new TwitterRiverClient("127.0.0.1", 5555);
+		client = new TwitterRiverClient(HOST_NAME, PORT);
 		setConfiguration();
 		stream.loadMenu();
 	}
@@ -36,9 +39,9 @@ public class TwitterRiver {
 
 			public void onStatus(Status status) {
 				try {
-					client.sendToPort(status.toString());
+					client.writeToTopology(status);
 				} catch (IOException e) {
-					System.out.println("Error sending status to Logstash.");
+					System.out.println("Error sending status to ThreadPool.");
 				}
 			}
 
@@ -63,9 +66,12 @@ public class TwitterRiver {
 		};
 
 		FilterQuery filterQuery = new FilterQuery();
-		String keywords[] = { "ireland" };
+		String keywords [] = { "ireland" };
+		String languages [] = { "en" };
 
 		filterQuery.track(keywords);
+		filterQuery.language(languages);
+		
 		twitterStream.addListener(listener);
 		twitterStream.filter(filterQuery);
 	}

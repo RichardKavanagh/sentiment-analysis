@@ -28,12 +28,16 @@ public class SentimentAnalysisTopology {
 
 		builder.setSpout("logstash_spout", new LogStashSpout());
 		
-		builder.setBolt("instance_filter", new TweetInstanceBolt())
+		builder.setBolt("tweet_preprocessor", new TweetPreprocessorBolt())
 		.shuffleGrouping("logstash_spout");
+		
+		/*
+		builder.setBolt("instance_filter", new TweetInstanceBolt())
+		.shuffleGrouping("tweet_preprocessor");
 		
 		builder.setBolt("twitter_filter", new TwitterFilterBolt())
 			.shuffleGrouping("instance_filter");
-		/*
+		
 		builder.setBolt("preprocessor", new TextPreprocessorBolt())
 			.shuffleGrouping("twitter_filter");
 		

@@ -17,7 +17,7 @@ import backtype.storm.tuple.Tuple;
  */
 public class TextSanitizerBolt extends BaseBasicBolt {
 
-	private static final long serialVersionUID = -4349364405881264772L;
+	private static final long serialVersionUID = 4349364405881264772L;
 	
 	private OutputCollector collector;
 

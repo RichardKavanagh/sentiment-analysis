@@ -1,4 +1,4 @@
-package bolts;
+package topology;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -55,15 +55,12 @@ public class FileUtils {
 		detector.reset();
 
 		if (encoding == null) {
-			System.out.println("Null encoding issue");
 			return false;
 		}
 		else if (encoding.equals(SUPPORTED_ENCODING)) {
-			System.out.println(encoding);
 			return true;
 		}
 		else {
-			System.out.println("Unsupported encoding issue");
 			return false;
 		}
 	}
