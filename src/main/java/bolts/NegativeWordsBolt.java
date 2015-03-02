@@ -33,18 +33,15 @@ public class NegativeWordsBolt extends BaseBasicBolt {
 		}
 
 		String[] words = text.split(" ");
-		int totalWordCount = words.length;
 		int negativeWordCount = 0;
-
 		for (String word : words) {
 			if (negativeWords.contains(word))
 				negativeWordCount++;
 		}
-
-		collector.emit(new Values(text , (float) negativeWordCount / totalWordCount));
+		collector.emit(new Values(text, negativeWordCount));
 	}
 
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
-		declarer.declare(new Fields("tweet_message", "negative_score"));
+		declarer.declare(new Fields("tweet_message", "negative_word_score"));
 	}
 }

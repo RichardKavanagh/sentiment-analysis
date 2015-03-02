@@ -33,15 +33,12 @@ public class PositiveWordsBolt extends BaseBasicBolt {
 		}
 
 		String[] words = text.split(" ");
-		int totalWordCount = words.length;
 		int positiveWordCount = 0;
-
 		for (String word : words) {
 			if (positiveWords.contains(word))
 				positiveWordCount++;
 		}
-
-		collector.emit(new Values(text , (float) positiveWordCount / totalWordCount));
+		collector.emit(new Values(text, positiveWordCount));
 	}
 
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {

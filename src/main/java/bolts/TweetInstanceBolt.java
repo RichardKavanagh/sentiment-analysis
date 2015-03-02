@@ -1,6 +1,5 @@
 package bolts;
 
-import java.io.IOException;
 import java.util.HashSet;
 
 import twitter4j.Status;
@@ -10,10 +9,6 @@ import backtype.storm.topology.base.BaseBasicBolt;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
 import backtype.storm.tuple.Values;
-
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /*
  * The bolt that ensures only one instance of each tweet enters the topology.
@@ -27,7 +22,6 @@ public class TweetInstanceBolt extends BaseBasicBolt {
 	private HashSet<String> hashSet = new HashSet<String>();
 
 	public void execute(Tuple input, BasicOutputCollector collector) {
-
 		Status tweet = (Status) input.getValueByField("tweet");
 		if (hashSet.contains(tweet.toString())) {
 			System.out.println("Tweet already processed.");
@@ -35,7 +29,7 @@ public class TweetInstanceBolt extends BaseBasicBolt {
 		}
 		else {
 			hashSet.add(tweet.toString());
-			System.out.println("Adding tweet to topology." + tweet.getText());
+			System.out.println("Adding tweet to topology. " + tweet.getId());
 			collector.emit(new Values(tweet));
 		}
 	}

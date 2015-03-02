@@ -16,8 +16,9 @@ import org.mozilla.universalchardet.UniversalDetector;
  */
 public class FileUtils {
 	
-	private static final String POSITIVE_WORDS = "positive-words.txt";
-	private static final String NEGATIVE_WORDS = "negative-words.txt";
+	private static final String POSITIVE_WORDS = "src/main/Resources//positive-words.txt";
+	private static final String NEGATIVE_WORDS = "src/main/Resources//negative-words.txt";
+	private static final String STOP_WORDS = "src/main/Resources/stop-words.txt";
 	
 	private static final String SUPPORTED_ENCODING = "UTF-8";
 	private static UniversalDetector detector = new UniversalDetector(null);
@@ -34,6 +35,23 @@ public class FileUtils {
 		try {
 			String line = bufferReader.readLine();
 
+			while (line != null) {
+				set.add(line);
+				set.add(System.lineSeparator());
+				line = bufferReader.readLine();
+			}
+		} finally {
+			bufferReader.close();
+		}
+		return set;
+	}
+	
+	public static Set<String> getStopWords() throws FileNotFoundException, IOException {
+		Set<String> set = new HashSet<String>();
+		BufferedReader bufferReader;
+		bufferReader = new BufferedReader(new FileReader(STOP_WORDS));
+		try {
+			String line = bufferReader.readLine();
 			while (line != null) {
 				set.add(line);
 				set.add(System.lineSeparator());

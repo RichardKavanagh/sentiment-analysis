@@ -40,6 +40,7 @@ public class TwitterRiver {
 			public void onStatus(Status status) {
 				try {
 					client.writeToTopology(status);
+					System.exit(-1);
 				} catch (IOException e) {
 					System.out.println("Error sending status to ThreadPool.");
 				}
@@ -66,7 +67,7 @@ public class TwitterRiver {
 		};
 
 		FilterQuery filterQuery = new FilterQuery();
-		String keywords [] = { "ireland" };
+		String keywords [] = { "ireland", "england" };
 		String languages [] = { "en" };
 
 		filterQuery.track(keywords);

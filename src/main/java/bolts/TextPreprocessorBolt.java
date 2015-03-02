@@ -1,7 +1,5 @@
 package bolts;
 
-import java.text.Normalizer;
-import java.text.Normalizer.Form;
 import java.util.Map;
 
 import backtype.storm.task.OutputCollector;
@@ -12,8 +10,6 @@ import backtype.storm.topology.base.BaseBasicBolt;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
 import backtype.storm.tuple.Values;
-
-import org.apache.commons.lang.StringUtils;
 
 /*
  * The preprocesseer bolt that provides first-round data sanitization.
@@ -31,14 +27,25 @@ public class TextPreprocessorBolt extends BaseBasicBolt {
 	}
 
 	public void execute(Tuple input, BasicOutputCollector collector) {
-		String id = input.getString(input.fieldIndex("id"));
-		String message = input.getString(input.fieldIndex("tweet_message"));
-		String user = input.getString(input.fieldIndex("tweet_user"));
-		message = message.replaceAll("[^a-zA-Z\\s]", "").trim().toLowerCase();
+		String id = input.getValueByField("tweet_id").toString();
+		String user = input.getValueByField("tweet_user").toString();
+		String message = preprocessString(input.getValueByField("tweet_message").toString());
+		String hashtags = preprocessString(input.getValueByField("tweet_hashtags").toString());
+		message = append(message,hashtags);
 		collector.emit(new Values(id, user, message));
 	}
 
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
 		declarer.declare(new Fields("tweet_id", "tweet_user", "tweet_message"));
+	}
+
+	private String preprocessString(String input) {
+		return input.replaceAll("[^a-zA-Z\\s]", "").trim().toLowerCase();
+	}
+
+	private String append(String message, String hashtags) {
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append(message).append(" [").append(hashtags).append("]");
+		return stringBuilder.toString();
 	}
 }
