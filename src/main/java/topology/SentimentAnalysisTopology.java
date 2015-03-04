@@ -1,10 +1,13 @@
 package topology;
 
-import spout.LogStashSpout;
+import spout.TwitterRiverSpout;
 import spout.ThreadPoolServer;
 import backtype.storm.Config;
 import backtype.storm.LocalCluster;
 import backtype.storm.topology.TopologyBuilder;
+import backtype.storm.tuple.Fields;
+import bolts.ElasticSearchWriterBolt;
+import bolts.JoinSentimentsBolt;
 import bolts.NegativeWordsBolt;
 import bolts.PositiveWordsBolt;
 import bolts.TextPreprocessorBolt;
@@ -24,10 +27,10 @@ public class SentimentAnalysisTopology {
 		String TOPOLOGY_NAME = "SENTIMENT_ANALYSIS";
 		TopologyBuilder builder = new TopologyBuilder();
 
-		builder.setSpout("logstash_spout", new LogStashSpout());
+		builder.setSpout("twitter_river_spout", new TwitterRiverSpout());
 
 		builder.setBolt("instance_filter", new TweetInstanceBolt())
-		.shuffleGrouping("logstash_spout");
+		.shuffleGrouping("twitter_river_spout");
 		
 		builder.setBolt("twitter_filter", new TwitterFilterBolt())
 			.shuffleGrouping("instance_filter");
@@ -38,17 +41,19 @@ public class SentimentAnalysisTopology {
 		builder.setBolt("sanitizer", new TextSanitizerBolt())
 			.shuffleGrouping("preprocessor");
 		
-		
 		builder.setBolt("positive_bag_of_words", new PositiveWordsBolt())
 			.shuffleGrouping("sanitizer");
 			
 		builder.setBolt("negative_bag_of_words", new NegativeWordsBolt())
 			.shuffleGrouping("sanitizer");
-		/*
+		
 		builder.setBolt("positive_negative_join", new JoinSentimentsBolt())
 			.fieldsGrouping("positive_bag_of_words", new Fields("tweet_id"))
 			.fieldsGrouping("negative_bag_of_words", new Fields("tweet_id"));
-		*/
+		
+		builder.setBolt("elasticsearch_writer", new ElasticSearchWriterBolt())
+			.shuffleGrouping("positive_negative_join");
+		
 		Config conf = new Config();
 		LocalCluster cluster = new LocalCluster();
 		cluster.submitTopology(TOPOLOGY_NAME, conf, builder.createTopology());

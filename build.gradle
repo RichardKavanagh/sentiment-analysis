@@ -26,6 +26,8 @@ dependencies {
 	compile 'org.twitter4j:twitter4j-stream:4.0.1'
 	compile 'com.googlecode.juniversalchardet:juniversalchardet:1.0.3'
 	compile 'com.ibm.icu:icu4j:51.1'
+	compile 'io.searchbox:jest:0.1.5'
+	compile 'org.elasticsearch:elasticsearch:1.1.2'
 }
 
 

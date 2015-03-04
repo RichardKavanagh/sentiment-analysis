@@ -8,25 +8,41 @@ import backtype.storm.tuple.Tuple;
 import backtype.storm.tuple.Values;
 
 public class JoinSentimentsBolt extends BaseBasicBolt {
-	
-	
+
+
 	private static final long serialVersionUID = 3640971489699420669L;
 
 	public void execute(Tuple input, BasicOutputCollector collector) {
+
+		String id = input.getString(input.fieldIndex("tweet_id"));
+		String text = input.getString(input.fieldIndex("tweet_message"));
+		int joinedScore = 0;
+		boolean postiveJoined = false;
+		boolean negativeJoined = false;
 		
-		/*
-		 * Will join the scores of PositiveWordsBolt and NegativeWordsBolt
-		 * to calculate tweet sentiment score.
-		 * 
-		 */
-		
+		if (input.contains("positive_word_score")) {
+			int positiveScore = input.fieldIndex("positive_word_score");
+			joinedScore += positiveScore;
+			if (negativeJoined) {
+				collector.emit(new Values(id, text, joinedScore));
+			}
+			postiveJoined = true;
+		}
+		else if (input.contains("negative_word_score")){
+			int negativeScore = input.fieldIndex("negative_word_score");
+			joinedScore += negativeScore;
+			if (postiveJoined) {
+				collector.emit(new Values(id, text, joinedScore));
+			}
+			negativeJoined = true;
+		}
+		else {
+			System.out.println("Unknown error occured joining bolts.");
+		}
+
 	}
-	
-	private void emit(BasicOutputCollector collector, Long id, String text, float positiveScore, float negativeScore) {
-		collector.emit(new Values(id, positiveScore, negativeScore, text));
-	}
-	
+
 	public void declareOutputFields(OutputFieldsDeclarer declarer){
-		declarer.declare(new Fields("tweet_id", "positive_score", "negative_score","tweet_text"));
+		declarer.declare(new Fields("tweet_id", "tweet_text", "tweet_sentiment"));
 	}
 }

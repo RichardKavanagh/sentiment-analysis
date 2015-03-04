@@ -22,8 +22,8 @@ public class NegativeWordsBolt extends BaseBasicBolt {
 	private static final long serialVersionUID = 42543534L;
 
 	public void execute(Tuple input, BasicOutputCollector collector) {
-
 		String text = input.getString(input.fieldIndex("tweet_message"));
+		String id = input.getString(input.fieldIndex("tweet_id"));
 		Set<String> negativeWords = new HashSet<String>();
 		
 		try {
@@ -35,13 +35,15 @@ public class NegativeWordsBolt extends BaseBasicBolt {
 		String[] words = text.split(" ");
 		int negativeWordCount = 0;
 		for (String word : words) {
-			if (negativeWords.contains(word))
+			if (negativeWords.contains(word)) {
+				System.out.println(word);
 				negativeWordCount++;
+			}
 		}
-		collector.emit(new Values(text, negativeWordCount));
+		collector.emit(new Values(id, text, negativeWordCount));
 	}
 
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
-		declarer.declare(new Fields("tweet_message", "negative_word_score"));
+		declarer.declare(new Fields("tweet_id","tweet_message", "negative_word_score"));
 	}
 }

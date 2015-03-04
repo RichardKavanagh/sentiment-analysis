@@ -14,7 +14,7 @@ import backtype.storm.tuple.Values;
  * 
  * @author Richard Kavanagh.
  */
-public class LogStashSpout extends BaseRichSpout  {
+public class TwitterRiverSpout extends BaseRichSpout  {
 
 	private static final long serialVersionUID = -7279996556144453244L;
 	
