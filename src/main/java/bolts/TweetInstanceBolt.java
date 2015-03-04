@@ -2,6 +2,8 @@ package bolts;
 
 import java.util.HashSet;
 
+import org.apache.log4j.Logger;
+
 import twitter4j.Status;
 import backtype.storm.topology.BasicOutputCollector;
 import backtype.storm.topology.OutputFieldsDeclarer;
@@ -17,6 +19,7 @@ import backtype.storm.tuple.Values;
  */
 public class TweetInstanceBolt extends BaseBasicBolt {
 
+	private static final Logger LOGGER = Logger.getLogger(TweetInstanceBolt.class);
 	private static final long serialVersionUID = 42543534L;
 
 	private HashSet<String> hashSet = new HashSet<String>();
@@ -24,12 +27,12 @@ public class TweetInstanceBolt extends BaseBasicBolt {
 	public void execute(Tuple input, BasicOutputCollector collector) {
 		Status tweet = (Status) input.getValueByField("tweet");
 		if (hashSet.contains(tweet.toString())) {
-			System.out.println("Tweet already processed.");
+			LOGGER.info("Tweet already processed.");
 			return;
 		}
 		else {
 			hashSet.add(tweet.toString());
-			System.out.println("Adding tweet to topology. " + tweet.getId());
+			LOGGER.info("Adding tweet to topology. " + tweet.getId());
 			collector.emit(new Values(tweet));
 		}
 	}

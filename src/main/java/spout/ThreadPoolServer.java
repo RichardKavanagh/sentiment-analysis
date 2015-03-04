@@ -7,6 +7,9 @@ import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.apache.log4j.Logger;
+
+import topology.TwitterRiver;
 import twitter4j.Status;
 
 /*
@@ -16,6 +19,8 @@ import twitter4j.Status;
  */
 public class ThreadPoolServer implements Runnable {
 
+	private static final Logger LOGGER = Logger.getLogger(ThreadPoolServer.class);
+	
 	protected int SERVER_PORT = 0;
 	protected int THREAD_AMOUNT = 20;
 
@@ -45,7 +50,7 @@ public class ThreadPoolServer implements Runnable {
 			} catch (IOException err) {
 
 				if(isStopped()) {
-					System.out.println("Server Stopped.") ;
+					LOGGER.info("Server Stopped.") ;
 					break;
 				}
 				throw new RuntimeException("Error accepting client connection", err);
@@ -54,7 +59,7 @@ public class ThreadPoolServer implements Runnable {
 		}
 
 		this.threadPool.shutdown();
-		System.out.println("Server Stopped.") ;
+		LOGGER.info("Server Stopped.") ;
 	}
 
 	public synchronized void stop(){

@@ -2,6 +2,9 @@ package bolts;
 
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
+import topology.TwitterRiver;
 import twitter4j.Status;
 import backtype.storm.task.OutputCollector;
 import backtype.storm.task.TopologyContext;
@@ -19,6 +22,7 @@ import backtype.storm.tuple.Values;
  */
 public class TwitterFilterBolt extends BaseBasicBolt {
 
+	private static final Logger LOGGER = Logger.getLogger(TwitterFilterBolt.class);
 	private static final long serialVersionUID = 7432280938048906081L;
 	
 	private OutputCollector collector;
@@ -37,8 +41,8 @@ public class TwitterFilterBolt extends BaseBasicBolt {
 			collector.emit(new Values(Long.toString(id), user, message, hashTags));
 		}
 		else {
-			System.out.println("Dropping tweet " + tweet.getId());
-			System.out.println(tweet.getId());
+			LOGGER.info("Dropping tweet " + tweet.getId());
+			LOGGER.info(tweet.getId());
 		}
 	}
 

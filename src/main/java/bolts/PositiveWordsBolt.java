@@ -28,15 +28,14 @@ public class PositiveWordsBolt extends BaseBasicBolt {
 		
 		try {
 			positiveWords = FileUtils.getWords(true);
-		} catch (IOException e) {
-			e.printStackTrace();
+		} catch (IOException err) {
+			err.printStackTrace();
 		}
 
 		String[] words = text.split(" ");
 		int positiveWordCount = 0;
 		for (String word : words) {
 			if (positiveWords.contains(word)) {
-				System.out.println(word);
 				positiveWordCount++;
 			}
 		}

@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
 import topology.FileUtils;
 import backtype.storm.topology.BasicOutputCollector;
 import backtype.storm.topology.OutputFieldsDeclarer;
@@ -28,15 +30,14 @@ public class NegativeWordsBolt extends BaseBasicBolt {
 		
 		try {
 			negativeWords = FileUtils.getWords(false);
-		} catch (IOException e) {
-			e.printStackTrace();
+		} catch (IOException err) {
+			err.printStackTrace();
 		}
 
 		String[] words = text.split(" ");
 		int negativeWordCount = 0;
 		for (String word : words) {
 			if (negativeWords.contains(word)) {
-				System.out.println(word);
 				negativeWordCount++;
 			}
 		}
