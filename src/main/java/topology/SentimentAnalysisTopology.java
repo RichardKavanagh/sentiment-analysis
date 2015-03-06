@@ -8,6 +8,7 @@ import backtype.storm.topology.TopologyBuilder;
 import backtype.storm.tuple.Fields;
 import bolts.ElasticSearchWriterBolt;
 import bolts.JoinSentimentsBolt;
+import bolts.JoinedSentimentCalculator;
 import bolts.NegativeWordsBolt;
 import bolts.PositiveWordsBolt;
 import bolts.TextPreprocessorBolt;
@@ -51,8 +52,12 @@ public class SentimentAnalysisTopology {
 			.fieldsGrouping("positive_bag_of_words", new Fields("tweet_id"))
 			.fieldsGrouping("negative_bag_of_words", new Fields("tweet_id"));
 		
-		builder.setBolt("elasticsearch_writer", new ElasticSearchWriterBolt())
+		builder.setBolt("sentiment_calculator", new JoinedSentimentCalculator())
 			.shuffleGrouping("positive_negative_join");
+		
+		builder.setBolt("elasticsearch_writer", new ElasticSearchWriterBolt())
+			.fieldsGrouping("positive_negative_join", new Fields("tweet_id", "tweet_text"))
+			.fieldsGrouping("sentiment_calculator", new Fields("tweet_sentiment"));
 		
 		Config conf = new Config();
 		LocalCluster cluster = new LocalCluster();

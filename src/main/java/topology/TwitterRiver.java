@@ -71,7 +71,7 @@ public class TwitterRiver {
 		};
 
 		FilterQuery filterQuery = new FilterQuery();
-		String keywords [] = { "ireland", "england" };
+		String keywords [] = { "ISIS" };
 		String languages [] = { "en" };
 
 		filterQuery.track(keywords);

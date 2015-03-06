@@ -9,6 +9,11 @@ import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
 import backtype.storm.tuple.Values;
 
+/*
+ * Joins the results from the positive/negative bolts.
+ * 
+ * @author Richard Kavanagh.
+ */
 public class JoinSentimentsBolt extends BaseBasicBolt {
 
 	private static final Logger LOGGER = Logger.getLogger(JoinSentimentsBolt.class);
@@ -24,16 +29,16 @@ public class JoinSentimentsBolt extends BaseBasicBolt {
 		String text = input.getString(input.fieldIndex("tweet_message"));
 		
 		if (input.contains("positive_word_score")) {
-			int positiveScore = input.fieldIndex("positive_word_score");
+			int positiveScore = input.getInteger((input.fieldIndex("positive_word_score")));
 			joinedScore += positiveScore;
 			postiveJoined = true;
 			if (negativeJoined) {
 				collector.emit(new Values(id, text, joinedScore));
 			}
 		}
-		else if (input.contains("negative_word_score")){
-			int negativeScore = input.fieldIndex("negative_word_score");
-			joinedScore += negativeScore;
+		else if (input.contains("negative_word_score")) {
+			int negativeScore = input.getInteger(input.fieldIndex("negative_word_score"));
+			joinedScore -= negativeScore;
 			negativeJoined = true;
 			if (postiveJoined) {
 				collector.emit(new Values(id, text, joinedScore));

@@ -64,7 +64,6 @@ public class FileUtils {
 	}
 	
 	public static boolean supportedEncoding(String tweet) {
-
 		byte[] bytes = tweet.getBytes();
 		detector.handleData(bytes, 0, bytes.length);
 		detector.dataEnd();

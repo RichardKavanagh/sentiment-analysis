@@ -2,7 +2,11 @@ package bolts;
 
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
+
+import org.apache.log4j.Logger;
 
 import topology.FileUtils;
 import backtype.storm.topology.BasicOutputCollector;
@@ -19,12 +23,14 @@ import backtype.storm.tuple.Values;
  */
 public class PositiveWordsBolt extends BaseBasicBolt {
 	
+	private static final Logger LOGGER = Logger.getLogger(PositiveWordsBolt.class);
 	private static final long serialVersionUID = -4229629366537572766L;
 
 	public void execute(Tuple input, BasicOutputCollector collector) {
 		String text = input.getString(input.fieldIndex("tweet_message"));
 		String id = input.getString(input.fieldIndex("tweet_id"));
 		Set<String> positiveWords = new HashSet<String>();
+		List<String> positiveWordsInTweet = new LinkedList<String>();
 		
 		try {
 			positiveWords = FileUtils.getWords(true);
@@ -36,9 +42,11 @@ public class PositiveWordsBolt extends BaseBasicBolt {
 		int positiveWordCount = 0;
 		for (String word : words) {
 			if (positiveWords.contains(word)) {
+				positiveWordsInTweet.add(word);
 				positiveWordCount++;
 			}
 		}
+		LOGGER.info("Positive words " + positiveWordsInTweet);
 		collector.emit(new Values(id, text, positiveWordCount));
 	}
 

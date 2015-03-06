@@ -4,7 +4,6 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import topology.TwitterRiver;
 import twitter4j.Status;
 import backtype.storm.task.OutputCollector;
 import backtype.storm.task.TopologyContext;
@@ -35,10 +34,10 @@ public class TwitterFilterBolt extends BaseBasicBolt {
 		Status tweet = (Status) input.getValueByField("tweet");
 		if (hasValues(tweet)) {
 			long id = tweet.getId();
-			String user = tweet.getUser().getName();
+			String userName = tweet.getUser().getName();
 			String message = tweet.getText();
 			String hashTags = getHashTags(tweet);
-			collector.emit(new Values(Long.toString(id), user, message, hashTags));
+			collector.emit(new Values(Long.toString(id), userName, message, hashTags));
 		}
 		else {
 			LOGGER.info("Dropping tweet " + tweet.getId());

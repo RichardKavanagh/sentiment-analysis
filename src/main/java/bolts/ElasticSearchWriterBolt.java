@@ -19,13 +19,8 @@ public class ElasticSearchWriterBolt extends BaseBasicBolt {
 
 	public void execute(Tuple input, BasicOutputCollector collector) {
 
-		/*
-		 * 
-		 * Will write sentiment analysis results to Elasticsearch database.
-		 * 
-		 */
-		//TODO Confirm message sentiment being calculated correctly.
-		LOGGER.info("Reached ElasticSearch bolt.");
+		LOGGER.info("In Elasticsearch bolt.");
+
 	}
 
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {

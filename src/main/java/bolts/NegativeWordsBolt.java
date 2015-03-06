@@ -2,6 +2,8 @@ package bolts;
 
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -21,12 +23,14 @@ import backtype.storm.tuple.Values;
  */
 public class NegativeWordsBolt extends BaseBasicBolt {
 
+	private static final Logger LOGGER = Logger.getLogger(NegativeWordsBolt.class);
 	private static final long serialVersionUID = 42543534L;
 
 	public void execute(Tuple input, BasicOutputCollector collector) {
 		String text = input.getString(input.fieldIndex("tweet_message"));
 		String id = input.getString(input.fieldIndex("tweet_id"));
 		Set<String> negativeWords = new HashSet<String>();
+		List<String> negativeWordsInTweet = new LinkedList<String>();
 		
 		try {
 			negativeWords = FileUtils.getWords(false);
@@ -39,8 +43,10 @@ public class NegativeWordsBolt extends BaseBasicBolt {
 		for (String word : words) {
 			if (negativeWords.contains(word)) {
 				negativeWordCount++;
+				negativeWordsInTweet.add(word);
 			}
 		}
+		LOGGER.info("Negative words " + negativeWordsInTweet);
 		collector.emit(new Values(id, text, negativeWordCount));
 	}
 
