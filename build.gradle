@@ -28,6 +28,7 @@ dependencies {
 	compile 'com.ibm.icu:icu4j:51.1'
 	compile 'io.searchbox:jest:' + jestVersion
 	compile 'org.elasticsearch:elasticsearch:' + elasticsearchVersion
+	compile 'edu.stanford.nlp:stanford-corenlp:3.3.0'
 }
 
 

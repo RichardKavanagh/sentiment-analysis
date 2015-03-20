@@ -16,9 +16,9 @@ import org.mozilla.universalchardet.UniversalDetector;
  */
 public class FileUtils {
 	
-	private static final String POSITIVE_WORDS = "src/main/Resources//positive-words.txt";
-	private static final String NEGATIVE_WORDS = "src/main/Resources//negative-words.txt";
-	private static final String STOP_WORDS = "src/main/Resources/stop-words.txt";
+	private static final String POSITIVE_WORDS = "src/main/resources/words/positive-words.txt";
+	private static final String NEGATIVE_WORDS = "src/main/resources/words/negative-words.txt";
+	private static final String STOP_WORDS = "src/main/resources/words/stop-words.txt";
 	
 	private static final String SUPPORTED_ENCODING = "UTF-8";
 	private static UniversalDetector detector = new UniversalDetector(null);
