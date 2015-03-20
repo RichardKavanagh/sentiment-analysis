@@ -20,9 +20,15 @@ public class ElasticSearchWriterBolt extends BaseBasicBolt {
 	public void execute(Tuple input, BasicOutputCollector collector) {
 
 		LOGGER.info("In Elasticsearch bolt.");
-
+		
+		/*
+		ElasticSearchClient client = new ElasticSearchClient();
+		client.init();
+		client.createIndex();
+		*/
 	}
 
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
+
 	}
 }
