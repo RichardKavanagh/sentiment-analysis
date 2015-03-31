@@ -44,6 +44,7 @@ public class TwitterRiver {
 			public void onStatus(Status status) {
 				try {
 					client.writeToTopology(status);
+					/* TODO Remove this when finished testing. */
 					System.exit(-1);
 				} catch (IOException e) {
 					LOGGER.info("Error sending status to ThreadPool.");
