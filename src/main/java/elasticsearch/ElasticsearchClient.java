@@ -13,14 +13,12 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.common.xcontent.ToXContent;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
 
-import backtype.storm.tuple.Tuple;
-
-
 /*
- * Elasticsearch clint class.
+ * Elasticsearch client class.
  * 
  * @author Richard Kavanagh.
  */
@@ -32,8 +30,6 @@ public class ElasticsearchClient {
 
 	private IndexRequestBuilder indexRequestBuilder;
 	private Client elasticSearchClient;
-	private int documentId;
-
 	private String host;
 	private int port;
 
@@ -46,7 +42,6 @@ public class ElasticsearchClient {
 	 * Checks if the index being write to exists , and if not creates it.
 	 */
 	public void init() {
-		documentId = 2;
 		if (elasticSearchClient == null) {
 			elasticSearchClient = getClient();
 		}
@@ -54,12 +49,11 @@ public class ElasticsearchClient {
 		if (!result.isExists()) {
 			createIndex();
 		}
-		indexRequestBuilder = elasticSearchClient.prepareIndex(INDEX_NAME, DOCUMENT_TYPE, Integer.toString(documentId));
+		indexRequestBuilder = elasticSearchClient.prepareIndex(INDEX_NAME, DOCUMENT_TYPE);
 	}
 
-	public void write() {
-		documentId++;
-		XContentBuilder contentBuilder = buildJSON(indexRequestBuilder);
+	public void write(String id, String text, String sentiment) {
+		XContentBuilder contentBuilder = buildJSON(indexRequestBuilder, id, text, sentiment);
 		indexRequestBuilder.setSource(contentBuilder);
 		IndexResponse indexResponse = indexRequestBuilder.execute().actionGet();
 		LOGGER.info("Wrote to elasticsearch " + indexResponse.toString());
@@ -72,19 +66,23 @@ public class ElasticsearchClient {
 		return transportClient;
 	}
 
-	private XContentBuilder buildJSON(final IndexRequestBuilder indexRequestBuilder) {
+	private XContentBuilder buildJSON(final IndexRequestBuilder indexRequestBuilder, String id, String text, String sentiment) {
 		XContentBuilder contentBuilder = null;
 		try {
 			contentBuilder = jsonBuilder().startObject().startObject(DOCUMENT_TYPE);
-			contentBuilder.field("user", "richard");
-			contentBuilder.field("message", "I am making tweets");
-			contentBuilder.field("sentiment", "positive");
-			contentBuilder.field("timestamp", "1243232143");
+			contentBuilder.field("id", id);
+			contentBuilder.field("message", text);
+			contentBuilder.field("sentiment", sentiment);
+			contentBuilder.field("timestamp", Integer.toString(currentTime()));
 			contentBuilder.endObject().endObject();
 		} catch (IOException err) {
 			err.printStackTrace();
 		}
 		return contentBuilder;
+	}
+
+	private int currentTime() {
+		return (int) (System.currentTimeMillis() / 1000L);
 	}
 
 	private void createIndex() {
@@ -105,6 +103,7 @@ public class ElasticsearchClient {
 					.field("user", "string")
 					.field("message", "string")
 					.field("sentiment","string")
+					.field("hashtags", "string")
 				.endObject()
 				.startObject("timestamp")
 					.field("type", "long")
