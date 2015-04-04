@@ -22,16 +22,16 @@ public class TweetInstanceBolt extends BaseBasicBolt {
 	private static final Logger LOGGER = Logger.getLogger(TweetInstanceBolt.class);
 	private static final long serialVersionUID = 42543534L;
 
-	private HashSet<String> hashSet = new HashSet<String>();
+	private HashSet<Long> hashSet = new HashSet<Long>();
 
-	public void execute(Tuple input, BasicOutputCollector collector) {
+	public synchronized void execute(Tuple input, BasicOutputCollector collector) {
 		Status tweet = (Status) input.getValueByField("tweet");
-		if (hashSet.contains(tweet.toString())) {
-			LOGGER.info("Tweet already processed.");
+		if (hashSet.contains(tweet.getId()) || tweet.isRetweet()) {
+			LOGGER.info("Tweet already processed or is a retweet.");
 			return;
 		}
 		else {
-			hashSet.add(tweet.toString());
+			hashSet.add(tweet.getId());
 			LOGGER.info("Adding tweet to topology. " + tweet.getId());
 			collector.emit(new Values(tweet));
 		}

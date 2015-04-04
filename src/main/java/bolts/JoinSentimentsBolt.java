@@ -34,6 +34,7 @@ public class JoinSentimentsBolt extends BaseBasicBolt {
 			postiveJoined = true;
 			if (negativeJoined) {
 				collector.emit(new Values(id, text, joinedScore));
+				resetFlags();
 			}
 		}
 		else if (input.contains("negative_word_score")) {
@@ -42,11 +43,18 @@ public class JoinSentimentsBolt extends BaseBasicBolt {
 			negativeJoined = true;
 			if (postiveJoined) {
 				collector.emit(new Values(id, text, joinedScore));
+				resetFlags();
 			}
 		}
 		else {
 			LOGGER.info("Unknown error occured joining bolts.");
 		}
+	}
+
+	private void resetFlags() {
+		postiveJoined = false;
+		negativeJoined = false;
+		
 	}
 
 	public void declareOutputFields(OutputFieldsDeclarer declarer){

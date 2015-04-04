@@ -52,8 +52,8 @@ public class ElasticsearchClient {
 		indexRequestBuilder = elasticSearchClient.prepareIndex(INDEX_NAME, DOCUMENT_TYPE);
 	}
 
-	public void write(String id, String text, String sentiment) {
-		XContentBuilder contentBuilder = buildJSON(indexRequestBuilder, id, text, sentiment);
+	public void write(String id, String text,String hashtags, String sentiment) {
+		XContentBuilder contentBuilder = buildJSON(indexRequestBuilder, id, text,hashtags, sentiment);
 		indexRequestBuilder.setSource(contentBuilder);
 		IndexResponse indexResponse = indexRequestBuilder.execute().actionGet();
 		LOGGER.info("Wrote to elasticsearch " + indexResponse.toString());
@@ -66,12 +66,13 @@ public class ElasticsearchClient {
 		return transportClient;
 	}
 
-	private XContentBuilder buildJSON(final IndexRequestBuilder indexRequestBuilder, String id, String text, String sentiment) {
+	private XContentBuilder buildJSON(final IndexRequestBuilder indexRequestBuilder, String id, String text, String hashtags, String sentiment) {
 		XContentBuilder contentBuilder = null;
 		try {
 			contentBuilder = jsonBuilder().startObject().startObject(DOCUMENT_TYPE);
 			contentBuilder.field("id", id);
 			contentBuilder.field("message", text);
+			contentBuilder.field("hashtags", hashtags);
 			contentBuilder.field("sentiment", sentiment);
 			contentBuilder.field("timestamp", Integer.toString(currentTime()));
 			contentBuilder.endObject().endObject();
@@ -93,27 +94,25 @@ public class ElasticsearchClient {
 	}
 
 	/*
-	 * Generates mapping for index. 
+	 * Generates mapping for index.
+	 * 
 	 */
 	private XContentBuilder getMapping() {
 		XContentBuilder mappingBuilder = null;
 		try {
-			mappingBuilder = XContentFactory.jsonBuilder().startObject()  
-				.startObject(DOCUMENT_TYPE)
+			mappingBuilder = XContentFactory.jsonBuilder().startObject().startObject(DOCUMENT_TYPE)  
 					.field("user", "string")
 					.field("message", "string")
-					.field("sentiment","string")
 					.field("hashtags", "string")
-				.endObject()
-				.startObject("timestamp")
-					.field("type", "long")
-					.field("store", "yes")
-					.field("index","not_analyzed")
-				.endObject();
+					.field("sentiment","string")
+					.field("timestamp", "long")
+					.endObject().endObject()
+					.endObject();
 		} catch (IOException err) {
 			err.printStackTrace();
 		}
 		return mappingBuilder;
+
 	}
 
 	/*

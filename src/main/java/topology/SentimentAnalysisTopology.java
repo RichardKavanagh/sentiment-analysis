@@ -40,7 +40,7 @@ public class SentimentAnalysisTopology {
 			.shuffleGrouping("twitter_filter");
 		
 		builder.setBolt("sanitizer", new TextSanitizerBolt())
-			.shuffleGrouping("preprocessor");
+			.shuffleGrouping("preprocessor", "processeMessageStream");
 		
 		builder.setBolt("positive_bag_of_words", new PositiveWordsBolt())
 			.shuffleGrouping("sanitizer");
@@ -56,7 +56,7 @@ public class SentimentAnalysisTopology {
 			.shuffleGrouping("positive_negative_join");
 		
 		builder.setBolt("elasticsearch_writer", new ElasticSearchWriterBolt())
-			.fieldsGrouping("positive_negative_join", new Fields("tweet_id", "tweet_text"))
+			.shuffleGrouping("preprocessor", "writeMessageStream")
 			.fieldsGrouping("sentiment_calculator", new Fields("tweet_sentiment"));
 		
 		Config conf = new Config();

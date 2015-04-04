@@ -1,9 +1,12 @@
 package bolts;
 
 
+import java.util.HashSet;
+
 import org.apache.log4j.Logger;
 
 import elasticsearch.ElasticsearchClient;
+import backtype.storm.task.TopologyContext;
 import backtype.storm.topology.BasicOutputCollector;
 import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.topology.base.BaseBasicBolt;
@@ -23,20 +26,19 @@ public class ElasticSearchWriterBolt extends BaseBasicBolt {
 	
 	private boolean sentimenetJoined = false;
 	private boolean idJoined = false;
-	String id,text,sentiment = "";
+	String id,text,sentiment,hashtags = "";
 	
 	public void execute(Tuple input, BasicOutputCollector collector) {
 		elasticsearchClient = new ElasticsearchClient();
-		LOGGER.info("In ElasticSearch writer bolt.");
-		
-		
 		if (input.contains("tweet_id")) {
 			LOGGER.info("In tweet sentiment clause.");
 			id = input.getString((input.fieldIndex("tweet_id")));
-			text = input.getString((input.fieldIndex("tweet_text")));
+			text = input.getString((input.fieldIndex("tweet_message")));
+			hashtags = input.getString((input.fieldIndex("tweet_hashtags")));
 			idJoined = true;
 			if (sentimenetJoined) {
-				elasticsearchClient.write(id,text,sentiment);
+				elasticsearchClient.write(id,text,hashtags,sentiment);
+				resetFlags();
 			}
 		}
 		else if (input.contains("tweet_sentiment")) {
@@ -44,7 +46,8 @@ public class ElasticSearchWriterBolt extends BaseBasicBolt {
 			sentiment = input.getString((input.fieldIndex("tweet_sentiment")));
 			sentimenetJoined = true;
 			if (idJoined) {
-				elasticsearchClient.write(id,text,sentiment);
+				elasticsearchClient.write(id,text,hashtags,sentiment);
+				resetFlags();
 			}
 		}
 		else {
@@ -52,6 +55,11 @@ public class ElasticSearchWriterBolt extends BaseBasicBolt {
 		}
 	}
 	
+	private void resetFlags() {
+		idJoined = false;
+		sentimenetJoined = false;
+	}
+
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
 	}
 }

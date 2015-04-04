@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
 import topology.FileUtils;
 import backtype.storm.task.OutputCollector;
 import backtype.storm.task.TopologyContext;
@@ -21,6 +23,7 @@ import backtype.storm.tuple.Values;
  */
 public class TextSanitizerBolt extends BaseBasicBolt {
 
+	private static final Logger LOGGER = Logger.getLogger(TextSanitizerBolt.class);
 	private static final long serialVersionUID = 4349364405881264772L;
 
 	private OutputCollector collector;
@@ -30,16 +33,16 @@ public class TextSanitizerBolt extends BaseBasicBolt {
 	}
 
 	public void execute(Tuple input, BasicOutputCollector collector) {
-
+		LOGGER.info("Reached Text sanitizer bolt.");
 		try {
 			Set<String> stopWords = FileUtils.getStopWords();
-			String message = input.getString(input.fieldIndex("tweet_message"));
+			String filteredMessage = input.getString(input.fieldIndex("tweet_message"));
 			for (String word : stopWords) {
-				message = message.replaceAll("\\b" + word + "\\b", "");
+				filteredMessage = filteredMessage.replaceAll("\\b" + word + "\\b", "");
 			}
 			collector.emit(new Values(input.getString(input.fieldIndex("tweet_id")),
 									  input.getString(input.fieldIndex("tweet_user")),
-									  message));
+									  filteredMessage));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

@@ -10,6 +10,8 @@ import twitter4j.StallWarning;
 import twitter4j.Status;
 import twitter4j.StatusDeletionNotice;
 import twitter4j.StatusListener;
+import twitter4j.Twitter;
+import twitter4j.TwitterFactory;
 import twitter4j.TwitterStream;
 import twitter4j.TwitterStreamFactory;
 import twitter4j.conf.ConfigurationBuilder;
@@ -30,6 +32,7 @@ public class TwitterRiver {
 	private static int PORT = 7777;
 
 	public static void main(String[] args) throws InterruptedException {
+		LOGGER.info("Launching Twitter river.");
 		TwitterRiver stream = new TwitterRiver();
 		client = new TwitterRiverClient(HOST_NAME, PORT);
 		setConfiguration();
@@ -45,7 +48,7 @@ public class TwitterRiver {
 				try {
 					client.writeToTopology(status);
 					/* TODO Remove this when finished testing. */
-					System.exit(-1);
+					//System.exit(-1);
 				} catch (IOException e) {
 					LOGGER.info("Error sending status to ThreadPool.");
 				}
@@ -78,8 +81,32 @@ public class TwitterRiver {
 		filterQuery.track(keywords);
 		filterQuery.language(languages);
 		
+		if (isFollowingUser() == true) {
+			filterQuery.follow(gettwitterUserId());
+		}
+		
 		twitterStream.addListener(listener);
 		twitterStream.filter(filterQuery);
+	}
+
+	//TODO Read the following four methods from elasticsearch.
+	private String[] getLanguages() {
+		String keywords [] = { "ISIS" };
+		return keywords;
+	}
+
+	private String[] getKeyWords() {
+		String languages [] = { "en" };
+		return languages;
+	}
+
+	private boolean isFollowingUser() {
+		return false;
+	}
+	
+	private long[] gettwitterUserId() {
+		long [] users = { 1234567l };
+		return users;
 	}
 
 	private static void setConfiguration() {
