@@ -13,7 +13,6 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
-import org.elasticsearch.common.xcontent.ToXContent;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
 
@@ -52,8 +51,9 @@ public class ElasticsearchClient {
 		indexRequestBuilder = elasticSearchClient.prepareIndex(INDEX_NAME, DOCUMENT_TYPE);
 	}
 
-	public void write(String id, String text,String hashtags, String sentiment) {
-		XContentBuilder contentBuilder = buildJSON(indexRequestBuilder, id, text,hashtags, sentiment);
+	public void write(String id, String user,String location, String text,
+			String links, String hashtags, String sentiment) {
+		XContentBuilder contentBuilder = buildJSON(indexRequestBuilder, id, user,location, text, links, hashtags, sentiment);
 		indexRequestBuilder.setSource(contentBuilder);
 		IndexResponse indexResponse = indexRequestBuilder.execute().actionGet();
 		LOGGER.info("Wrote to elasticsearch " + indexResponse.toString());
@@ -66,12 +66,16 @@ public class ElasticsearchClient {
 		return transportClient;
 	}
 
-	private XContentBuilder buildJSON(final IndexRequestBuilder indexRequestBuilder, String id, String text, String hashtags, String sentiment) {
+	private XContentBuilder buildJSON(final IndexRequestBuilder indexRequestBuilder, String id, String user,
+			String location,String text, String links, String hashtags, String sentiment) {
 		XContentBuilder contentBuilder = null;
 		try {
 			contentBuilder = jsonBuilder().startObject().startObject(DOCUMENT_TYPE);
 			contentBuilder.field("id", id);
+			contentBuilder.field("user", user);
+			contentBuilder.field("location", location);
 			contentBuilder.field("message", text);
+			contentBuilder.field("links", links);
 			contentBuilder.field("hashtags", hashtags);
 			contentBuilder.field("sentiment", sentiment);
 			contentBuilder.field("timestamp", Integer.toString(currentTime()));
@@ -101,10 +105,11 @@ public class ElasticsearchClient {
 		XContentBuilder mappingBuilder = null;
 		try {
 			mappingBuilder = XContentFactory.jsonBuilder().startObject().startObject(DOCUMENT_TYPE)  
-					.field("user", "string")
-					.field("message", "string")
+					.field("id", "string")
+					.field("user", "string").field("location", "string")
+					.field("message", "string").field("links", "string")
+					.field("media", "string").field("sentiment","string")
 					.field("hashtags", "string")
-					.field("sentiment","string")
 					.field("timestamp", "long")
 					.endObject().endObject()
 					.endObject();

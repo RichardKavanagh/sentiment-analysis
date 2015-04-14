@@ -23,7 +23,7 @@ public class TwitterFilterBolt extends BaseBasicBolt {
 
 	private static final Logger LOGGER = Logger.getLogger(TwitterFilterBolt.class);
 	private static final long serialVersionUID = 7432280938048906081L;
-	
+
 	private OutputCollector collector;
 
 	public void prepare(Map conf, TopologyContext context, OutputCollector collector) {
@@ -37,7 +37,7 @@ public class TwitterFilterBolt extends BaseBasicBolt {
 			String userName = tweet.getUser().getName();
 			String message = tweet.getText();
 			String hashTags = getHashTags(tweet);
-			collector.emit(new Values(Long.toString(id), userName, message, hashTags));
+			collector.emit(new Values(tweet, Long.toString(id), userName, message, hashTags));
 		}
 		else {
 			LOGGER.info("Dropping tweet " + tweet.getId());
@@ -46,7 +46,7 @@ public class TwitterFilterBolt extends BaseBasicBolt {
 	}
 
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
-		declarer.declare(new Fields("tweet_id", "tweet_user", "tweet_message", "tweet_hashtags"));
+		declarer.declare(new Fields("tweet", "tweet_id", "tweet_user", "tweet_message", "tweet_hashtags"));
 	}
 
 	private boolean hasValues(Status tweet) {

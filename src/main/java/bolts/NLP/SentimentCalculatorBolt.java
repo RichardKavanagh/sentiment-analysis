@@ -20,7 +20,7 @@ public class SentimentCalculatorBolt {
 	
 	public void execute(Tuple input, BasicOutputCollector collector) {
 		
-		
+		//TODO Implement
 	}
 
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {

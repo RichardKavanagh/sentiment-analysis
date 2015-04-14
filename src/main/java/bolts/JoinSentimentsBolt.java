@@ -25,15 +25,12 @@ public class JoinSentimentsBolt extends BaseBasicBolt {
 
 	public void execute(Tuple input, BasicOutputCollector collector) {
 
-		String id = input.getString(input.fieldIndex("tweet_id"));
-		String text = input.getString(input.fieldIndex("tweet_message"));
-		
 		if (input.contains("positive_word_score")) {
 			int positiveScore = input.getInteger((input.fieldIndex("positive_word_score")));
 			joinedScore += positiveScore;
 			postiveJoined = true;
 			if (negativeJoined) {
-				collector.emit(new Values(id, text, joinedScore));
+				collector.emit(new Values(joinedScore));
 				resetFlags();
 			}
 		}
@@ -42,7 +39,7 @@ public class JoinSentimentsBolt extends BaseBasicBolt {
 			joinedScore -= negativeScore;
 			negativeJoined = true;
 			if (postiveJoined) {
-				collector.emit(new Values(id, text, joinedScore));
+				collector.emit(new Values(joinedScore));
 				resetFlags();
 			}
 		}
@@ -58,6 +55,6 @@ public class JoinSentimentsBolt extends BaseBasicBolt {
 	}
 
 	public void declareOutputFields(OutputFieldsDeclarer declarer){
-		declarer.declare(new Fields("tweet_id", "tweet_text", "tweet_sentiment"));
+		declarer.declare(new Fields("tweet_sentiment"));
 	}
 }

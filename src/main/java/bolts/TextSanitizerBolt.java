@@ -40,15 +40,13 @@ public class TextSanitizerBolt extends BaseBasicBolt {
 			for (String word : stopWords) {
 				filteredMessage = filteredMessage.replaceAll("\\b" + word + "\\b", "");
 			}
-			collector.emit(new Values(input.getString(input.fieldIndex("tweet_id")),
-									  input.getString(input.fieldIndex("tweet_user")),
-									  filteredMessage));
+			collector.emit(new Values(filteredMessage));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}   
 
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
-		declarer.declare(new Fields("tweet_id","tweet_user", "tweet_message"));
+		declarer.declare(new Fields("tweet_message"));
 	}
 }

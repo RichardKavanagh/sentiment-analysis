@@ -22,19 +22,18 @@ public class JoinedSentimentCalculator extends BaseBasicBolt {
 	
 	public void execute(Tuple input, BasicOutputCollector collector) {
 
-		String id = input.getString(input.fieldIndex("tweet_id"));
 		int sentimentScore = input.getInteger(input.fieldIndex("tweet_sentiment"));
 		
 		if (sentimentScore == 0) {
-			LOGGER.info("Tweet " + id + " classified as " + SentimentValue.NEUTRAL.getSentiment());
+			LOGGER.info("Tweet " + " classified as " + SentimentValue.NEUTRAL.getSentiment());
 			collector.emit(new Values(SentimentValue.NEUTRAL.getSentiment()));
 		}
 		else if (sentimentScore > 0) {
-			LOGGER.info("Tweet " + id + " classified as " + SentimentValue.POSITIVE.getSentiment());
+			LOGGER.info("Tweet " + " classified as " + SentimentValue.POSITIVE.getSentiment());
 			collector.emit(new Values((SentimentValue.POSITIVE.getSentiment())));
 		}
 		else {
-			LOGGER.info("Tweet " + id + " classified as " + SentimentValue.NEGATIVE.getSentiment());
+			LOGGER.info("Tweet " + " classified as " + SentimentValue.NEGATIVE.getSentiment());
 			collector.emit(new Values(SentimentValue.NEGATIVE.getSentiment()));
 		}
 	}

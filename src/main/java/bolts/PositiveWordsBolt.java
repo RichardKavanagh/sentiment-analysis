@@ -28,7 +28,6 @@ public class PositiveWordsBolt extends BaseBasicBolt {
 
 	public void execute(Tuple input, BasicOutputCollector collector) {
 		String text = input.getString(input.fieldIndex("tweet_message"));
-		String id = input.getString(input.fieldIndex("tweet_id"));
 		Set<String> positiveWords = new HashSet<String>();
 		List<String> positiveWordsInTweet = new LinkedList<String>();
 		
@@ -47,10 +46,10 @@ public class PositiveWordsBolt extends BaseBasicBolt {
 			}
 		}
 		LOGGER.info("Positive words " + positiveWordsInTweet);
-		collector.emit(new Values(id, text, positiveWordCount));
+		collector.emit(new Values(positiveWordCount));
 	}
 
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
-		 declarer.declare(new Fields("tweet_id", "tweet_message", "positive_word_score"));
+		 declarer.declare(new Fields("positive_word_score"));
 	}
 }
