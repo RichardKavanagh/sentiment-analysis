@@ -16,7 +16,7 @@ import backtype.storm.tuple.Values;
 
 /*
  * The preprocesseer bolt that provides first-round data sanitization
- *  and splits the tweet into three streams of data.
+ *  and splits the tweet into four streams of data.
  * 
  * @author Richard Kavanagh
  */
@@ -40,15 +40,28 @@ public class TextPreprocessorBolt extends BaseBasicBolt {
 		String message = preprocessString(input.getValueByField("tweet_message").toString());
 		String hashtags = preprocessString(input.getValueByField("tweet_hashtags").toString());
 		
-		collector.emit("sentimentAnalysisStream", new Values(message));
+		if (getSentimentAnalysisMode().equals("nlp")) {
+			LOGGER.info("Taking nlp sentiment analysis stream.");
+			collector.emit("nlpSentimentAnalysisStream", new Values(tweet));
+		}
+		else {
+			LOGGER.info("Taking bag-of-words sentiment analysis stream.");
+			collector.emit("sentimentAnalysisStream", new Values(message));
+		}
 		collector.emit("elasticSearchStream", new Values(id, user, message, hashtags));
 		collector.emit("entityParseStream", new Values(tweet, message));
+	}
+
+	//TODO Get this from configuration in elasticsearch.
+	private Object getSentimentAnalysisMode() {
+		return "bag-of-words";
 	}
 
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
 		declarer.declareStream("elasticSearchStream", new Fields("tweet_id", "tweet_user", "tweet_message", "tweet_hashtags"));
 		declarer.declareStream("entityParseStream", new Fields("tweet", "tweet_message"));
 		declarer.declareStream("sentimentAnalysisStream", new Fields("tweet_message"));
+		declarer.declareStream("nlpSentimentAnalysisStream", new Fields("tweet"));
 	}
 	
 

@@ -51,11 +51,10 @@ public class TwitterRiver {
 		StatusListener listener = new StatusListener() {
 
 			public void onStatus(Status status) {
-				System.out.println(status.getUser().toString());
 				try {
 					client.writeToTopology(status);
 					/* TODO Remove this when finished testing. */
-					//System.exit(-1);
+					System.exit(-1);
 				} catch (IOException e) {
 					LOGGER.info("Error sending status to ThreadPool.");
 				}
@@ -89,11 +88,12 @@ public class TwitterRiver {
 		filterQuery.track(keywords);
 		filterQuery.language(languages);
 
+		/*
 		if (isFollowingUser()) {
-			long [] id = {2426945665l};
+			long [] id = convertUserNameToID(users,config);
 			filterQuery.follow(id);
-					//convertUserNameToID(users,config));
 		}
+		*/
 
 		twitterStream.addListener(listener);
 		twitterStream.filter(filterQuery);
@@ -101,7 +101,7 @@ public class TwitterRiver {
 
 	//TODO Read the following four methods from elasticsearch.
 	private String[] getLanguages() {
-		String keywords [] = { "ISIS" };
+		String keywords [] = { "obama", "isis" };
 		return keywords;
 	}
 
@@ -117,7 +117,7 @@ public class TwitterRiver {
 	}
 
 	private boolean isFollowingUser() {
-		return true;
+		return false;
 	}
 
 	/*

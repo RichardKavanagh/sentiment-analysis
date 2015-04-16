@@ -16,6 +16,7 @@ import bolts.TextSanitizerBolt;
 import bolts.TweetEntityBolt;
 import bolts.TweetInstanceBolt;
 import bolts.TwitterFilterBolt;
+import bolts.NLP.NLPSentimentCalculatorBolt;
 
 /*
  * Storm topology to perform sentiment analysis on a twitter stream.
@@ -46,6 +47,9 @@ public class SentimentAnalysisTopology {
 		builder.setBolt("entity_parser", new TweetEntityBolt())
 			.shuffleGrouping("preprocessor", "entityParseStream");
 		
+		builder.setBolt("nlp_sentiment_calculator", new NLPSentimentCalculatorBolt())
+			.shuffleGrouping("preprocessor", "nlpSentimentAnalysisStream");
+		
 		builder.setBolt("positive_bag_of_words", new PositiveWordsBolt())
 			.shuffleGrouping("sanitizer");
 			
@@ -62,7 +66,8 @@ public class SentimentAnalysisTopology {
 		builder.setBolt("elasticsearch_writer", new ElasticSearchWriterBolt())
 			.shuffleGrouping("preprocessor", "elasticSearchStream")
 			.fieldsGrouping("entity_parser", new Fields("tweet_URLs", "tweet_location"))
-			.fieldsGrouping("sentiment_calculator", new Fields("tweet_sentiment"));
+			.fieldsGrouping("sentiment_calculator", new Fields("tweet_sentiment"))
+			.fieldsGrouping("nlp_sentiment_calculator", new Fields("tweet_sentiment"));
 		
 		Config conf = new Config();
 		LocalCluster cluster = new LocalCluster();

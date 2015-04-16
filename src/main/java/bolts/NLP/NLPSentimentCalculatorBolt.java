@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 
 import backtype.storm.topology.BasicOutputCollector;
 import backtype.storm.topology.OutputFieldsDeclarer;
+import backtype.storm.topology.base.BaseBasicBolt;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
 
@@ -12,10 +13,10 @@ import backtype.storm.tuple.Tuple;
  * 
  * @author Richard Kavanagh.
  */
-public class SentimentCalculatorBolt {
+public class NLPSentimentCalculatorBolt extends BaseBasicBolt {
 	
 
-	private static final Logger LOGGER = Logger.getLogger(SentimentCalculatorBolt.class);
+	private static final Logger LOGGER = Logger.getLogger(NLPSentimentCalculatorBolt.class);
 	private static final long serialVersionUID = -422962936423672766L;
 	
 	public void execute(Tuple input, BasicOutputCollector collector) {
