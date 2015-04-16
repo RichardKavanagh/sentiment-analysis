@@ -25,7 +25,7 @@ public class ElasticsearchClient {
 
 	private static final Logger LOGGER = Logger.getLogger(ElasticsearchClient.class);
 	private static String INDEX_NAME = "twitter";
-	private static String DOCUMENT_TYPE = "tweet";
+	private static String TWITTER_DOCUMENT = "tweet";
 
 	private IndexRequestBuilder indexRequestBuilder;
 	private Client elasticSearchClient;
@@ -48,7 +48,7 @@ public class ElasticsearchClient {
 		if (!result.isExists()) {
 			createIndex();
 		}
-		indexRequestBuilder = elasticSearchClient.prepareIndex(INDEX_NAME, DOCUMENT_TYPE);
+		indexRequestBuilder = elasticSearchClient.prepareIndex(INDEX_NAME, TWITTER_DOCUMENT);
 	}
 
 	public void write(String id, String user,String location, String text,
@@ -70,7 +70,7 @@ public class ElasticsearchClient {
 			String location,String text, String links, String hashtags, String sentiment) {
 		XContentBuilder contentBuilder = null;
 		try {
-			contentBuilder = jsonBuilder().startObject().startObject(DOCUMENT_TYPE);
+			contentBuilder = jsonBuilder().startObject().startObject(TWITTER_DOCUMENT);
 			contentBuilder.field("id", id);
 			contentBuilder.field("user", user);
 			contentBuilder.field("location", location);
@@ -93,7 +93,7 @@ public class ElasticsearchClient {
 	private void createIndex() {
 		LOGGER.info("Creating elasticsearch index " + INDEX_NAME);
 		final CreateIndexRequestBuilder createIndexRequestBuilder = elasticSearchClient.admin().indices().prepareCreate(INDEX_NAME);
-		createIndexRequestBuilder.addMapping(DOCUMENT_TYPE, getMapping());
+		createIndexRequestBuilder.addMapping(TWITTER_DOCUMENT, getMapping());
 		createIndexRequestBuilder.execute().actionGet();
 	}
 
@@ -104,7 +104,7 @@ public class ElasticsearchClient {
 	private XContentBuilder getMapping() {
 		XContentBuilder mappingBuilder = null;
 		try {
-			mappingBuilder = XContentFactory.jsonBuilder().startObject().startObject(DOCUMENT_TYPE)  
+			mappingBuilder = XContentFactory.jsonBuilder().startObject().startObject(TWITTER_DOCUMENT)  
 					.field("id", "string")
 					.field("user", "string").field("location", "string")
 					.field("message", "string").field("links", "string")

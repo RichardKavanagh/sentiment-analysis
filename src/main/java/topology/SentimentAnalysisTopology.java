@@ -6,6 +6,7 @@ import backtype.storm.Config;
 import backtype.storm.LocalCluster;
 import backtype.storm.topology.TopologyBuilder;
 import backtype.storm.tuple.Fields;
+import bolts.ElasticSearchConfigurationBolt;
 import bolts.ElasticSearchWriterBolt;
 import bolts.JoinSentimentsBolt;
 import bolts.JoinedSentimentCalculator;
@@ -29,8 +30,11 @@ public class SentimentAnalysisTopology {
 
 		String TOPOLOGY_NAME = "SENTIMENT_ANALYSIS";
 		TopologyBuilder builder = new TopologyBuilder();
-
+		
 		builder.setSpout("twitter_river_spout", new TwitterRiverSpout());
+		
+		//TODO Can we put everything in the prepare section of this bolt ?.
+		builder.setBolt("elasticsearch_configuration", new ElasticSearchConfigurationBolt());
 
 		builder.setBolt("instance_filter", new TweetInstanceBolt())
 		.shuffleGrouping("twitter_river_spout");
