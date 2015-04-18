@@ -52,8 +52,8 @@ public class ElasticsearchClient {
 	}
 
 	public void write(String id, String user,String location, String text,
-			String links, String hashtags, String sentiment) {
-		XContentBuilder contentBuilder = buildJSON(indexRequestBuilder, id, user,location, text, links, hashtags, sentiment);
+			String links, String hashtags, String sentiment,String score) {
+		XContentBuilder contentBuilder = buildJSON(indexRequestBuilder, id, user,location, text, links, hashtags, sentiment,score);
 		indexRequestBuilder.setSource(contentBuilder);
 		IndexResponse indexResponse = indexRequestBuilder.execute().actionGet();
 		LOGGER.info("Wrote to elasticsearch " + indexResponse.toString());
@@ -67,7 +67,7 @@ public class ElasticsearchClient {
 	}
 
 	private XContentBuilder buildJSON(final IndexRequestBuilder indexRequestBuilder, String id, String user,
-			String location,String text, String links, String hashtags, String sentiment) {
+			String location,String text, String links, String hashtags, String sentiment, String score) {
 		XContentBuilder contentBuilder = null;
 		try {
 			contentBuilder = jsonBuilder().startObject().startObject(TWITTER_DOCUMENT);
@@ -78,6 +78,7 @@ public class ElasticsearchClient {
 			contentBuilder.field("links", links);
 			contentBuilder.field("hashtags", hashtags);
 			contentBuilder.field("sentiment", sentiment);
+			contentBuilder.field("score", score);
 			contentBuilder.field("timestamp", Integer.toString(currentTime()));
 			contentBuilder.endObject().endObject();
 		} catch (IOException err) {
@@ -109,7 +110,7 @@ public class ElasticsearchClient {
 					.field("user", "string").field("location", "string")
 					.field("message", "string").field("links", "string")
 					.field("media", "string").field("sentiment","string")
-					.field("hashtags", "string")
+					.field("score", "string").field("hashtags", "string")
 					.field("timestamp", "long")
 					.endObject().endObject()
 					.endObject();

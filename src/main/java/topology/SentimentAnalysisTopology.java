@@ -2,10 +2,12 @@ package topology;
 
 import spout.TwitterRiverSpout;
 import spout.ThreadPoolServer;
+
 import backtype.storm.Config;
 import backtype.storm.LocalCluster;
 import backtype.storm.topology.TopologyBuilder;
 import backtype.storm.tuple.Fields;
+
 import bolts.ElasticSearchConfigurationBolt;
 import bolts.ElasticSearchWriterBolt;
 import bolts.JoinSentimentsBolt;
@@ -33,11 +35,11 @@ public class SentimentAnalysisTopology {
 		
 		builder.setSpout("twitter_river_spout", new TwitterRiverSpout());
 		
-		//TODO Can we put everything in the prepare section of this bolt ?.
-		builder.setBolt("elasticsearch_configuration", new ElasticSearchConfigurationBolt());
+		builder.setBolt("elasticsearch_configuration", new ElasticSearchConfigurationBolt())
+			.shuffleGrouping("twitter_river_spout");
 
 		builder.setBolt("instance_filter", new TweetInstanceBolt())
-		.shuffleGrouping("twitter_river_spout");
+		.shuffleGrouping("elasticsearch_configuration");
 		
 		builder.setBolt("twitter_filter", new TwitterFilterBolt())
 			.shuffleGrouping("instance_filter");

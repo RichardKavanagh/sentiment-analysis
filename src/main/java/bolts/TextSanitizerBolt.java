@@ -6,6 +6,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import topology.FieldValue;
 import topology.FileUtils;
 import backtype.storm.task.OutputCollector;
 import backtype.storm.task.TopologyContext;
@@ -36,7 +37,7 @@ public class TextSanitizerBolt extends BaseBasicBolt {
 		LOGGER.info("Reached Text sanitizer bolt.");
 		try {
 			Set<String> stopWords = FileUtils.getStopWords();
-			String filteredMessage = input.getString(input.fieldIndex("tweet_message"));
+			String filteredMessage = input.getString(input.fieldIndex(FieldValue.MESSAGE.getString()));
 			for (String word : stopWords) {
 				filteredMessage = filteredMessage.replaceAll("\\b" + word + "\\b", "");
 			}

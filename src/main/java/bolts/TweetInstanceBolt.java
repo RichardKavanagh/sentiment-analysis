@@ -4,6 +4,7 @@ import java.util.HashSet;
 
 import org.apache.log4j.Logger;
 
+import topology.FieldValue;
 import twitter4j.Status;
 import backtype.storm.topology.BasicOutputCollector;
 import backtype.storm.topology.OutputFieldsDeclarer;
@@ -20,16 +21,21 @@ import backtype.storm.tuple.Values;
 public class TweetInstanceBolt extends BaseBasicBolt {
 
 	private static final Logger LOGGER = Logger.getLogger(TweetInstanceBolt.class);
-	private static final long serialVersionUID = 42543534L;
+	private static final long serialVersionUID = 425435354634L;
 
 	private HashSet<Long> hashSet = new HashSet<Long>();
 
 	public synchronized void execute(Tuple input, BasicOutputCollector collector) {
-		Status tweet = (Status) input.getValueByField("tweet");
-		if (hashSet.contains(tweet.getId()) || tweet.isRetweet()) {
-			LOGGER.info("Tweet already processed or is a retweet.");
+		Status tweet = (Status) input.getValueByField(FieldValue.TWEET.getString());
+		if (hashSet.contains(tweet.getId())) {
+			LOGGER.info("Tweet already processed.");
+			return;
+		}/*
+		else if(tweet.isRetweet()) {
+			LOGGER.info("Tweet is a retweet.");
 			return;
 		}
+		*/
 		else {
 			hashSet.add(tweet.getId());
 			LOGGER.info("Adding tweet to topology. " + tweet.getId());

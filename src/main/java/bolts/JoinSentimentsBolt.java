@@ -2,6 +2,7 @@ package bolts;
 
 import org.apache.log4j.Logger;
 
+import topology.FieldValue;
 import backtype.storm.topology.BasicOutputCollector;
 import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.topology.base.BaseBasicBolt;
@@ -25,8 +26,8 @@ public class JoinSentimentsBolt extends BaseBasicBolt {
 
 	public void execute(Tuple input, BasicOutputCollector collector) {
 
-		if (input.contains("positive_word_score")) {
-			int positiveScore = input.getInteger((input.fieldIndex("positive_word_score")));
+		if (input.contains(FieldValue.POSITIVE.getString())) {
+			int positiveScore = input.getInteger((input.fieldIndex(FieldValue.POSITIVE.getString())));
 			joinedScore += positiveScore;
 			postiveJoined = true;
 			if (negativeJoined) {
@@ -34,8 +35,8 @@ public class JoinSentimentsBolt extends BaseBasicBolt {
 				resetFlags();
 			}
 		}
-		else if (input.contains("negative_word_score")) {
-			int negativeScore = input.getInteger(input.fieldIndex("negative_word_score"));
+		else if (input.contains(FieldValue.NEGATIVE.getString())) {
+			int negativeScore = input.getInteger(input.fieldIndex(FieldValue.NEGATIVE.getString()));
 			joinedScore -= negativeScore;
 			negativeJoined = true;
 			if (postiveJoined) {

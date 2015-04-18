@@ -2,6 +2,7 @@ package bolts;
 
 import org.apache.log4j.Logger;
 
+import topology.FieldValue;
 import topology.SentimentValue;
 import backtype.storm.topology.BasicOutputCollector;
 import backtype.storm.topology.OutputFieldsDeclarer;
@@ -22,23 +23,23 @@ public class JoinedSentimentCalculator extends BaseBasicBolt {
 	
 	public void execute(Tuple input, BasicOutputCollector collector) {
 
-		int sentimentScore = input.getInteger(input.fieldIndex("tweet_sentiment"));
+		int sentimentScore = input.getInteger(input.fieldIndex(FieldValue.SENTIMENT.getString()));
 		
 		if (sentimentScore == 0) {
 			LOGGER.info("Tweet " + " classified as " + SentimentValue.NEUTRAL.getSentiment());
-			collector.emit(new Values(SentimentValue.NEUTRAL.getSentiment()));
+			collector.emit(new Values(SentimentValue.NEUTRAL.getSentiment(), sentimentScore));
 		}
 		else if (sentimentScore > 0) {
 			LOGGER.info("Tweet " + " classified as " + SentimentValue.POSITIVE.getSentiment());
-			collector.emit(new Values((SentimentValue.POSITIVE.getSentiment())));
+			collector.emit(new Values(SentimentValue.POSITIVE.getSentiment(), sentimentScore));
 		}
 		else {
 			LOGGER.info("Tweet " + " classified as " + SentimentValue.NEGATIVE.getSentiment());
-			collector.emit(new Values(SentimentValue.NEGATIVE.getSentiment()));
+			collector.emit(new Values(SentimentValue.NEGATIVE.getSentiment(), sentimentScore));
 		}
 	}
 
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
-		declarer.declare(new Fields("tweet_sentiment"));
+		declarer.declare(new Fields("tweet_sentiment", "sentiment_score"));
 	}
 }

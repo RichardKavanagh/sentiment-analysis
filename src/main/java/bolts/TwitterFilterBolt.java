@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import topology.FieldValue;
 import twitter4j.Status;
 import backtype.storm.task.OutputCollector;
 import backtype.storm.task.TopologyContext;
@@ -31,7 +32,7 @@ public class TwitterFilterBolt extends BaseBasicBolt {
 	}
 
 	public void execute(Tuple input, BasicOutputCollector collector) {
-		Status tweet = (Status) input.getValueByField("tweet");
+		Status tweet = (Status) input.getValueByField(FieldValue.TWEET.getString());
 		if (hasValues(tweet)) {
 			long id = tweet.getId();
 			String userName = tweet.getUser().getName();

@@ -4,6 +4,8 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import clojure.reflect.Field;
+import topology.FieldValue;
 import twitter4j.Status;
 import backtype.storm.task.OutputCollector;
 import backtype.storm.task.TopologyContext;
@@ -34,7 +36,7 @@ public class TweetEntityBolt extends BaseBasicBolt {
 
 	public void execute(Tuple input, BasicOutputCollector collector) {
 		LOGGER.info("Reached TweetEntity bolt.");
-		Status tweet = (Status) input.getValueByField("tweet");
+		Status tweet = (Status) input.getValueByField(FieldValue.TWEET.getString());
 		URLs = getURLEntities(tweet);
 		location = getLocation(tweet);
 		collector.emit(new Values(URLs, location));

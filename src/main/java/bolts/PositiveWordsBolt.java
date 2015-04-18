@@ -8,6 +8,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import topology.FieldValue;
 import topology.FileUtils;
 import backtype.storm.topology.BasicOutputCollector;
 import backtype.storm.topology.OutputFieldsDeclarer;
@@ -27,7 +28,7 @@ public class PositiveWordsBolt extends BaseBasicBolt {
 	private static final long serialVersionUID = -4229629366537572766L;
 
 	public void execute(Tuple input, BasicOutputCollector collector) {
-		String text = input.getString(input.fieldIndex("tweet_message"));
+		String text = input.getString(input.fieldIndex(FieldValue.MESSAGE.getString()));
 		Set<String> positiveWords = new HashSet<String>();
 		List<String> positiveWordsInTweet = new LinkedList<String>();
 		
