@@ -1,4 +1,4 @@
-package spout;
+package utils;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -9,6 +9,7 @@ import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
 
+import elasticsearch.ConfigurationSingleton;
 import twitter4j.Status;
 
 /*
@@ -83,7 +84,7 @@ public class ThreadPoolServer implements Runnable {
 	}
 
 	/*
-	 * Inner static class to define worker for each logstash client.
+	 * Inner static class to define worker for each client.
 	 */
 	private static class LogStashClient implements Runnable {
 

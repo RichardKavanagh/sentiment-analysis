@@ -1,4 +1,4 @@
-package topology;
+package values;
 
 /**
  * Enum containing the various field names in a Twitter status.
@@ -29,8 +29,3 @@ public enum FieldValue {
 		return field;
 	}
 }
-
-
-
-
-

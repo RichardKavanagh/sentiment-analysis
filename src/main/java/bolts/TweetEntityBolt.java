@@ -1,14 +1,10 @@
 package bolts;
 
-import java.util.Map;
-
 import org.apache.log4j.Logger;
 
-import clojure.reflect.Field;
-import topology.FieldValue;
 import twitter4j.Status;
+import values.FieldValue;
 import backtype.storm.task.OutputCollector;
-import backtype.storm.task.TopologyContext;
 import backtype.storm.topology.BasicOutputCollector;
 import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.topology.base.BaseBasicBolt;
@@ -23,16 +19,10 @@ import backtype.storm.tuple.Values;
  */
 public class TweetEntityBolt extends BaseBasicBolt {
 
-
 	private static final Logger LOGGER = Logger.getLogger(TweetEntityBolt.class);
 	private static final long serialVersionUID = 5508385638081026411L;
-
-	private OutputCollector collector;
+	
 	private String URLs,location = "";
-
-	public void prepare(Map conf, TopologyContext context, OutputCollector collector) {
-		this.collector = collector;
-	}
 
 	public void execute(Tuple input, BasicOutputCollector collector) {
 		LOGGER.info("Reached TweetEntity bolt.");
@@ -42,9 +32,8 @@ public class TweetEntityBolt extends BaseBasicBolt {
 		collector.emit(new Values(URLs, location));
 	}
 
-
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
-		declarer.declare(new Fields("tweet_URLs", "tweet_location"));
+		declarer.declare(new Fields(FieldValue.URL.getString(), FieldValue.LOCATION.getString()));
 	}
 	
 	private String getLocation(Status tweet) {

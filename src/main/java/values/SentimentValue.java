@@ -1,7 +1,7 @@
-package topology;
+package values;
 
 /**
- * Enum containing the bag-of-words sentiment results
+ * Enum containing the possible sentiment results for the bag-of-words model.
  *
  * @author Richard Kavanagh.
  */

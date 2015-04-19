@@ -4,8 +4,9 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import topology.FieldValue;
+import elasticsearch.ConfigurationSingleton;
 import twitter4j.Status;
+import values.FieldValue;
 import backtype.storm.task.OutputCollector;
 import backtype.storm.task.TopologyContext;
 import backtype.storm.topology.BasicOutputCollector;
@@ -16,14 +17,13 @@ import backtype.storm.tuple.Tuple;
 import backtype.storm.tuple.Values;
 
 /*
- * The preprocesseer bolt that provides first-round data sanitization
- *  and splits the tweet into four streams of data.
+ * The StreamSplitterBolt bolt splits the tweet into four streams of data.
  * 
  * @author Richard Kavanagh
  */
-public class TextPreprocessorBolt extends BaseBasicBolt {
+public class StreamSplitterBolt extends BaseBasicBolt {
 
-	private static final Logger LOGGER = Logger.getLogger(TextPreprocessorBolt.class);
+	private static final Logger LOGGER = Logger.getLogger(StreamSplitterBolt.class);
 	private static final long serialVersionUID = 5324264730654714029L;
 	private static final String NLP_STREAM = "nlp";
 	
@@ -34,17 +34,17 @@ public class TextPreprocessorBolt extends BaseBasicBolt {
 	}
 
 	public void execute(Tuple input, BasicOutputCollector collector) {
-		LOGGER.info("Reached TextPreprocessor bolt.");
+		LOGGER.info("Reached StreamSplitter bolt.");
 		Status tweet = (Status) input.getValueByField(FieldValue.TWEET.getString());
 		
 		String id = input.getValueByField(FieldValue.ID.getString()).toString();
 		String user = input.getValueByField(FieldValue.USER.getString()).toString();
-		String message = preprocessString(input.getValueByField(FieldValue.MESSAGE.getString()).toString());
-		String hashtags = preprocessString(input.getValueByField(FieldValue.HASHTAG.getString()).toString());
+		String message = input.getValueByField(FieldValue.MESSAGE.getString()).toString();
+		String hashtags = input.getValueByField(FieldValue.HASHTAG.getString()).toString();
 		
-		if (getSentimentAnalysisMode().equals(NLP_STREAM)) {
+		if (getModeOfOperation().equals(NLP_STREAM)) {
 			LOGGER.info("Taking NLP sentiment analysis stream.");
-			collector.emit("nlpSentimentAnalysisStream", new Values(tweet));
+			collector.emit("nlpSentimentAnalysisStream", new Values(message));
 		}
 		else {
 			LOGGER.info("Taking bag-of-words sentiment analysis stream.");
@@ -54,19 +54,16 @@ public class TextPreprocessorBolt extends BaseBasicBolt {
 		collector.emit("entityParseStream", new Values(tweet, message));
 	}
 
-	//TODO Get this from configuration in elasticsearch.
-	private Object getSentimentAnalysisMode() {
-		return "bag-of-words";
+	private String getModeOfOperation() {
+		return ConfigurationSingleton.getInstance().getModeOfOperation();
 	}
 	
-	private String preprocessString(String input) {
-		return input.replaceAll("[^a-zA-Z\\s]", "").trim().toLowerCase();
-	}
 
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
-		declarer.declareStream("elasticSearchStream", new Fields("tweet_id", "tweet_user", "tweet_message", "tweet_hashtags"));
-		declarer.declareStream("entityParseStream", new Fields("tweet", "tweet_message"));
-		declarer.declareStream("sentimentAnalysisStream", new Fields("tweet_message"));
-		declarer.declareStream("nlpSentimentAnalysisStream", new Fields("tweet"));
+		declarer.declareStream("elasticSearchStream", new Fields(FieldValue.ID.getString(),FieldValue.USER.getString(),
+				FieldValue.MESSAGE.getString(), FieldValue.HASHTAG.getString()));
+		declarer.declareStream("entityParseStream", new Fields(FieldValue.TWEET.getString(), FieldValue.MESSAGE.getString()));
+		declarer.declareStream("sentimentAnalysisStream", new Fields(FieldValue.MESSAGE.getString()));
+		declarer.declareStream("nlpSentimentAnalysisStream", new Fields(FieldValue.MESSAGE.getString()));
 	}
 }

@@ -2,7 +2,7 @@ package bolts;
 
 import org.apache.log4j.Logger;
 
-import topology.FieldValue;
+import values.FieldValue;
 import backtype.storm.topology.BasicOutputCollector;
 import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.topology.base.BaseBasicBolt;
@@ -52,10 +52,9 @@ public class JoinSentimentsBolt extends BaseBasicBolt {
 	private void resetFlags() {
 		postiveJoined = false;
 		negativeJoined = false;
-		
 	}
 
 	public void declareOutputFields(OutputFieldsDeclarer declarer){
-		declarer.declare(new Fields("tweet_sentiment"));
+		declarer.declare(new Fields(FieldValue.SENTIMENT.getString()));
 	}
 }

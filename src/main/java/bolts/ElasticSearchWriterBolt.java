@@ -2,7 +2,7 @@ package bolts;
 
 import org.apache.log4j.Logger;
 
-import topology.FieldValue;
+import values.FieldValue;
 import elasticsearch.ElasticsearchClient;
 import backtype.storm.topology.BasicOutputCollector;
 import backtype.storm.topology.OutputFieldsDeclarer;

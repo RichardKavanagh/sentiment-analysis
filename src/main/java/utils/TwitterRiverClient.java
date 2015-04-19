@@ -1,10 +1,9 @@
-package spout;
+package utils;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-import topology.FileUtils;
 import twitter4j.Status;
 
 /*

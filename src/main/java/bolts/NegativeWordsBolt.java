@@ -8,8 +8,8 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import topology.FieldValue;
-import topology.FileUtils;
+import utils.FileUtils;
+import values.FieldValue;
 import backtype.storm.topology.BasicOutputCollector;
 import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.topology.base.BaseBasicBolt;
@@ -51,6 +51,6 @@ public class NegativeWordsBolt extends BaseBasicBolt {
 	}
 
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
-		declarer.declare(new Fields("negative_word_score"));
+		declarer.declare(new Fields(FieldValue.NEGATIVE.getString()));
 	}
 }

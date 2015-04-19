@@ -27,7 +27,8 @@ dependencies {
 	compile 'com.googlecode.juniversalchardet:juniversalchardet:1.0.3'
 	compile 'com.ibm.icu:icu4j:51.1'
 	compile 'org.elasticsearch:elasticsearch:' + elasticsearchVersion
-	compile 'edu.stanford.nlp:stanford-corenlp:3.3.0'
+	compile 'edu.stanford.nlp:stanford-corenlp:' + stanfordNLPVersion
+	compile 'edu.stanford.nlp:stanford-corenlp:3.3.0-models'
 }
 
 

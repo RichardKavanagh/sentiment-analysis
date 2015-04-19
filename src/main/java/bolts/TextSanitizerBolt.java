@@ -6,8 +6,8 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import topology.FieldValue;
-import topology.FileUtils;
+import utils.FileUtils;
+import values.FieldValue;
 import backtype.storm.task.OutputCollector;
 import backtype.storm.task.TopologyContext;
 import backtype.storm.topology.BasicOutputCollector;
@@ -26,7 +26,7 @@ public class TextSanitizerBolt extends BaseBasicBolt {
 
 	private static final Logger LOGGER = Logger.getLogger(TextSanitizerBolt.class);
 	private static final long serialVersionUID = 4349364405881264772L;
-
+	
 	private OutputCollector collector;
 
 	public void prepare(Map conf, TopologyContext context, OutputCollector collector) {
@@ -39,8 +39,9 @@ public class TextSanitizerBolt extends BaseBasicBolt {
 			Set<String> stopWords = FileUtils.getStopWords();
 			String filteredMessage = input.getString(input.fieldIndex(FieldValue.MESSAGE.getString()));
 			for (String word : stopWords) {
-				filteredMessage = filteredMessage.replaceAll("\\b" + word + "\\b", "");
+					filteredMessage = filteredMessage.replaceAll("\\b" + word + "\\b", "");
 			}
+			
 			collector.emit(new Values(filteredMessage));
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -48,6 +49,6 @@ public class TextSanitizerBolt extends BaseBasicBolt {
 	}   
 
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
-		declarer.declare(new Fields("tweet_message"));
+		declarer.declare(new Fields(FieldValue.MESSAGE.getString()));
 	}
 }

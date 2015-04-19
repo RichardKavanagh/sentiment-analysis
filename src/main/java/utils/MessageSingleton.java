@@ -1,8 +1,10 @@
-package spout;
+package utils;
 
 import twitter4j.Status;
 
 /*
+ * Message singleton used to pass messages safely from the spout.
+ * 
  * @author Richard Kavanagh.
  */
 public class MessageSingleton {

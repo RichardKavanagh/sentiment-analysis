@@ -2,8 +2,8 @@ package bolts;
 
 import org.apache.log4j.Logger;
 
-import topology.FieldValue;
-import topology.SentimentValue;
+import values.FieldValue;
+import values.SentimentValue;
 import backtype.storm.topology.BasicOutputCollector;
 import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.topology.base.BaseBasicBolt;
@@ -16,7 +16,7 @@ import backtype.storm.tuple.Values;
  * 
  * @author Richard Kavanagh
  */
-public class JoinedSentimentCalculator extends BaseBasicBolt {
+public class JoinedSentimentCalculatorBolt extends BaseBasicBolt {
 
 	private static final Logger LOGGER = Logger.getLogger(TwitterFilterBolt.class);
 	private static final long serialVersionUID = -4229629366537572766L;
@@ -40,6 +40,6 @@ public class JoinedSentimentCalculator extends BaseBasicBolt {
 	}
 
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
-		declarer.declare(new Fields("tweet_sentiment", "sentiment_score"));
+		declarer.declare(new Fields(FieldValue.SENTIMENT.getString(), FieldValue.SCORE.getString()));
 	}
 }

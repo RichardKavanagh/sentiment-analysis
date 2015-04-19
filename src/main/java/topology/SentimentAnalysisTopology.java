@@ -1,24 +1,25 @@
 package topology;
 
 import spout.TwitterRiverSpout;
-import spout.ThreadPoolServer;
-
+import utils.ThreadPoolServer;
+import values.FieldValue;
 import backtype.storm.Config;
 import backtype.storm.LocalCluster;
 import backtype.storm.topology.TopologyBuilder;
 import backtype.storm.tuple.Fields;
-
 import bolts.ElasticSearchConfigurationBolt;
 import bolts.ElasticSearchWriterBolt;
 import bolts.JoinSentimentsBolt;
-import bolts.JoinedSentimentCalculator;
+import bolts.JoinedSentimentCalculatorBolt;
 import bolts.NegativeWordsBolt;
 import bolts.PositiveWordsBolt;
-import bolts.TextPreprocessorBolt;
+import bolts.StreamSplitterBolt;
+import bolts.TextPreProcessorBolt;
 import bolts.TextSanitizerBolt;
 import bolts.TweetEntityBolt;
 import bolts.TweetInstanceBolt;
 import bolts.TwitterFilterBolt;
+import bolts.NLP.NLPSentimentBolt;
 import bolts.NLP.NLPSentimentCalculatorBolt;
 
 /*
@@ -44,17 +45,20 @@ public class SentimentAnalysisTopology {
 		builder.setBolt("twitter_filter", new TwitterFilterBolt())
 			.shuffleGrouping("instance_filter");
 		
-		builder.setBolt("preprocessor", new TextPreprocessorBolt())
+		builder.setBolt("preprocessor", new TextPreProcessorBolt())
 			.shuffleGrouping("twitter_filter");
 		
+		builder.setBolt("stream_splitter", new StreamSplitterBolt())
+			.shuffleGrouping("preprocessor");
+		
 		builder.setBolt("sanitizer", new TextSanitizerBolt())
-			.shuffleGrouping("preprocessor", "sentimentAnalysisStream");
+			.shuffleGrouping("stream_splitter", "sentimentAnalysisStream");
 	
 		builder.setBolt("entity_parser", new TweetEntityBolt())
-			.shuffleGrouping("preprocessor", "entityParseStream");
+			.shuffleGrouping("stream_splitter", "entityParseStream");
 		
-		builder.setBolt("nlp_sentiment_calculator", new NLPSentimentCalculatorBolt())
-			.shuffleGrouping("preprocessor", "nlpSentimentAnalysisStream");
+		builder.setBolt("nlp_sentiment", new NLPSentimentBolt())
+			.shuffleGrouping("stream_splitter", "nlpSentimentAnalysisStream");
 		
 		builder.setBolt("positive_bag_of_words", new PositiveWordsBolt())
 			.shuffleGrouping("sanitizer");
@@ -63,17 +67,20 @@ public class SentimentAnalysisTopology {
 			.shuffleGrouping("sanitizer");
 		
 		builder.setBolt("positive_negative_join", new JoinSentimentsBolt())
-			.fieldsGrouping("positive_bag_of_words", new Fields("positive_word_score"))
-			.fieldsGrouping("negative_bag_of_words", new Fields("negative_word_score"));
+			.fieldsGrouping("positive_bag_of_words", new Fields(FieldValue.POSITIVE.getString()))
+			.fieldsGrouping("negative_bag_of_words", new Fields(FieldValue.NEGATIVE.getString()));
 		
-		builder.setBolt("sentiment_calculator", new JoinedSentimentCalculator())
+		builder.setBolt("sentiment_calculator", new JoinedSentimentCalculatorBolt())
 			.shuffleGrouping("positive_negative_join");
 		
+		builder.setBolt("nlp_sentiment_calculator", new NLPSentimentCalculatorBolt())
+			.shuffleGrouping("nlp_sentiment");
+		
 		builder.setBolt("elasticsearch_writer", new ElasticSearchWriterBolt())
-			.shuffleGrouping("preprocessor", "elasticSearchStream")
-			.fieldsGrouping("entity_parser", new Fields("tweet_URLs", "tweet_location"))
-			.fieldsGrouping("sentiment_calculator", new Fields("tweet_sentiment"))
-			.fieldsGrouping("nlp_sentiment_calculator", new Fields("tweet_sentiment"));
+			.shuffleGrouping("stream_splitter", "elasticSearchStream")
+			.fieldsGrouping("entity_parser", new Fields(FieldValue.URL.getString(), FieldValue.LOCATION.getString()))
+			.fieldsGrouping("sentiment_calculator", new Fields(FieldValue.SENTIMENT.getString()))
+			.fieldsGrouping("nlp_sentiment_calculator", new Fields(FieldValue.SENTIMENT.getString()));
 		
 		Config conf = new Config();
 		LocalCluster cluster = new LocalCluster();
