@@ -11,6 +11,10 @@ import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.common.joda.time.DateTime;
+import org.elasticsearch.common.joda.time.DateTimeZone;
+import org.elasticsearch.common.joda.time.LocalDate;
+import org.elasticsearch.common.joda.time.format.DateTimeFormatter;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.common.xcontent.XContentBuilder;
@@ -79,7 +83,7 @@ public class ElasticsearchClient {
 			contentBuilder.field("hashtags", hashtags);
 			contentBuilder.field("sentiment", sentiment);
 			contentBuilder.field("score", score);
-			contentBuilder.field("timestamp", Integer.toString(currentTime()));
+			contentBuilder.field("timestamp", currentTime());
 			contentBuilder.endObject().endObject();
 		} catch (IOException err) {
 			err.printStackTrace();
@@ -87,8 +91,10 @@ public class ElasticsearchClient {
 		return contentBuilder;
 	}
 
-	private int currentTime() {
-		return (int) (System.currentTimeMillis() / 1000L);
+	private DateTime currentTime() {
+		long value = (System.currentTimeMillis() / 1000L);
+		DateTime startDate = new DateTime(value * 1000L);
+		return startDate;
 	}
 
 	private void createIndex() {
