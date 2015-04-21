@@ -1,6 +1,8 @@
 apply plugin: 'java'
 apply plugin: 'eclipse'
 
+apply plugin: 'sonar-runner'
+
 sourceCompatibility = 1.5
 version = '1.0'
 
@@ -10,6 +12,12 @@ jar {
     }
 }
 
+sonarRunner() {
+	sonarProperties {
+		property "sonar.host.url", "http://sonar.chewy.ianduffy.ie"
+	}
+}
+
 repositories {       
 	mavenCentral()
 	maven {
@@ -17,20 +25,46 @@ repositories {
 	}      
 }
 
-  
 dependencies {
 	compile 'org.apache.storm:storm-core:' + stormVersion
 	compile 'com.fasterxml.jackson.core:jackson-core:' + jacksonVersion
 	compile 'com.fasterxml.jackson.core:jackson-databind:' + jacksonVersion
 	compile 'org.twitter4j:twitter4j-core:' + tweet4jVersion
 	compile 'org.twitter4j:twitter4j-stream:' + tweet4jVersion
-	compile 'com.googlecode.juniversalchardet:juniversalchardet:1.0.3'
-	compile 'com.ibm.icu:icu4j:51.1'
+	compile 'com.googlecode.juniversalchardet:juniversalchardet:' + juniversalchardetVersion
+	compile 'com.ibm.icu:icu4j:' + icu4jVersion
 	compile 'org.elasticsearch:elasticsearch:' + elasticsearchVersion
 	compile 'edu.stanford.nlp:stanford-corenlp:' + stanfordNLPVersion
-	compile 'edu.stanford.nlp:stanford-corenlp:3.3.0-models'
+	compile 'edu.stanford.nlp:stanford-corenlp:' + stanfordNLPVersion + '-models'
+	
+	testCompile 'junit:junit:4.+'
+	testCompile 'org.jmock:jmock-junit4:2.6.0'
+	testCompile 'org.jmock:jmock-legacy:2.6.0'
 }
 
+
+task makeDeb(type: Exec) {
+	
+	def rootdir = project.getRootDir().toString()
+	
+	group = "Build"
+	description = "Builds a debian package file"
+	commandLine = [
+		"fpm",
+		"-s","dir",
+		"-t","deb",
+		"--name","sentiment-analysis",
+		"--description","Storm topology to perform sentiment-analysis.",
+		"--vendor","DCU",
+		"--maintainer","Richard Kavanagh<richard.kavanagh7@mail.dcu.ie>",
+		"--version",version,
+		"--url","www.richardkavanagh.ie",
+		"--inputs","fpm/config/fpm/package-inputs",
+		"--force",
+		"--before-install","fpm/scripts/installer/before-install.sh",
+		"--after-install","fpm/scripts/installer/after-install.sh"
+	]
+}
 
 configurations.all {
  
