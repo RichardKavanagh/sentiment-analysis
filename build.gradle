@@ -1,10 +1,31 @@
+apply plugin: 'application'
 apply plugin: 'java'
 apply plugin: 'eclipse'
 
 apply plugin: 'sonar-runner'
+apply plugin: 'jacoco' 
 
 sourceCompatibility = 1.5
 version = '1.0'
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.2'
+}
+
+jacoco {
+	toolVersion = "0.7.1.201405082137"
+} 
+
+
+def coverageSourceDirs = [	'../app/src/main/java'	]
+
+jacocoTestReport {
+    reports {
+        xml.enabled false
+        csv.enabled false
+        html.destination "${buildDir}/jacocoHtml"
+    }
+}
 
 jar {
     manifest {
@@ -12,11 +33,19 @@ jar {
     }
 }
 
+
 sonarRunner() {
 	sonarProperties {
 		property "sonar.host.url", "http://sonar.chewy.ianduffy.ie"
+		property "sonar.projectKey", "sentiment-analysis"
+		property "sonar.projectName", "sentiment-analysis"
+		property "sonar.projectVersion", "V1.0"
+		property "sonar.language", "java"
+		property "sonar.sources", "src/main/java"
+		property "sonar.binaries", "build" 
 	}
 }
+
 
 repositories {       
 	mavenCentral()
@@ -24,6 +53,7 @@ repositories {
 		url "http://clojars.org/repo"
 	}      
 }
+
 
 dependencies {
 	compile 'org.apache.storm:storm-core:' + stormVersion
@@ -66,8 +96,8 @@ task makeDeb(type: Exec) {
 	]
 }
 
+
 configurations.all {
- 
 }
 
 test {
