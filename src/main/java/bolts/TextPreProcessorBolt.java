@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import clojure.lang.IFn.L;
 import twitter4j.Status;
 import values.FieldValue;
 import backtype.storm.task.OutputCollector;
@@ -25,7 +26,10 @@ public class TextPreProcessorBolt extends BaseBasicBolt {
 	private static final Logger LOGGER = Logger.getLogger(TextPreProcessorBolt.class);
 	private static final long serialVersionUID = -8171045339897756375L;
 	
+	private static final String HTTP_DELIMITER = "http";
 	private static final String RETWEET_DELIMITER = "RT";
+	private static final CharSequence NULL_TEXT = "null";
+	private static final String SPACE = " ";
 	private OutputCollector collector;
 
 	public void prepare(Map conf, TopologyContext context, OutputCollector collector) {
@@ -42,14 +46,32 @@ public class TextPreProcessorBolt extends BaseBasicBolt {
 		
 		String message = input.getValueByField(FieldValue.MESSAGE.getString()).toString();
 		message = preprocessString(message);
-		collector.emit(new Values(tweet, id, user, message, hashtags));
+		
+		if (!message.contains(NULL_TEXT)) {
+			collector.emit(new Values(tweet, id, user, message, hashtags));
+		}
+		else {
+			LOGGER.info("Dropping Tweet: Id " + id);
+		}
 	}
 	
 	private String preprocessString(String input) {
 		String processedInput = input;
 		processedInput = removeRetweetChars(processedInput);
 		processedInput = removeNoise(processedInput);
+		processedInput = removeURLs(processedInput);
 		return processedInput;
+	}
+
+	private String removeURLs(String processedInput) {
+		String [] tokens = processedInput.split(SPACE);
+		StringBuilder stringBuilder = new StringBuilder();
+		for (String token : tokens) {
+			if (token.startsWith(HTTP_DELIMITER) == false) {
+				stringBuilder.append(token).append(SPACE);
+			}
+		}
+		return stringBuilder.toString();
 	}
 
 	private String removeNoise(String processedInput) {
