@@ -17,7 +17,8 @@ public enum FieldValue {
 	POSITIVE("positive_word_score"),
 	NEGATIVE("negative_word_score"),
 	URL("tweet_URLs"),
-	LOCATION("tweet_location");
+	LOCATION("tweet_location"),
+	COUNTRY("tweet_country");
 
 	private String field;
 

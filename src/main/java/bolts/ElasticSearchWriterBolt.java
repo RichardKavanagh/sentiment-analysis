@@ -22,7 +22,7 @@ public class ElasticSearchWriterBolt extends BaseBasicBolt {
 	private static final String EMPTY = "";
 	private ElasticsearchClient elasticsearchClient;
 	private boolean sentimenetJoined,idJoined,entityJoined = false;
-	String id,user,text,location,links,media,hashtags,sentiment,score = EMPTY;
+	String id,user,text,location,country,links,media,hashtags,sentiment,score = EMPTY;
 	
 	public void execute(Tuple input, BasicOutputCollector collector) {
 		elasticsearchClient = new ElasticsearchClient();
@@ -43,6 +43,7 @@ public class ElasticSearchWriterBolt extends BaseBasicBolt {
 	private void readEntityStream(Tuple input) {
 		links = input.getString(input.fieldIndex(FieldValue.URL.getString()));
 		location = input.getString(input.fieldIndex(FieldValue.LOCATION.getString()));
+		country = input.getString(input.fieldIndex(FieldValue.COUNTRY.getString()));
 		entityJoined = true;
 		if (sentimenetJoined && idJoined) {
 			writeToElasticsearch();
@@ -74,7 +75,7 @@ public class ElasticSearchWriterBolt extends BaseBasicBolt {
 
 	private void writeToElasticsearch() {
 		String message = text.replaceAll(links, EMPTY);
-		elasticsearchClient.write(id,user,location,message,links,hashtags,sentiment,score);
+		elasticsearchClient.write(id,user,location,country,message,links,hashtags,sentiment,score);
 	}
 	
 	private void resetFlags() {

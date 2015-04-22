@@ -26,7 +26,7 @@ public class TextPreProcessorBolt extends BaseBasicBolt {
 	private static final Logger LOGGER = Logger.getLogger(TextPreProcessorBolt.class);
 	private static final long serialVersionUID = -8171045339897756375L;
 	
-	private static final String HTTP_DELIMITER = "http";
+	private static final String HTTP_DELIMITER = "htt";
 	private static final String RETWEET_DELIMITER = "RT";
 	private static final CharSequence NULL_TEXT = "null";
 	private static final String SPACE = " ";
@@ -58,8 +58,8 @@ public class TextPreProcessorBolt extends BaseBasicBolt {
 	private String preprocessString(String input) {
 		String processedInput = input;
 		processedInput = removeRetweetChars(processedInput);
-		processedInput = removeNoise(processedInput);
 		processedInput = removeURLs(processedInput);
+		processedInput = removeNoise(processedInput);
 		return processedInput;
 	}
 
@@ -67,7 +67,7 @@ public class TextPreProcessorBolt extends BaseBasicBolt {
 		String [] tokens = processedInput.split(SPACE);
 		StringBuilder stringBuilder = new StringBuilder();
 		for (String token : tokens) {
-			if (token.startsWith(HTTP_DELIMITER) == false) {
+			if (token.contains(HTTP_DELIMITER) == false) {
 				stringBuilder.append(token).append(SPACE);
 			}
 		}

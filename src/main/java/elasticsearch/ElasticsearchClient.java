@@ -55,9 +55,9 @@ public class ElasticsearchClient {
 		indexRequestBuilder = elasticSearchClient.prepareIndex(INDEX_NAME, TWITTER_DOCUMENT);
 	}
 
-	public void write(String id, String user,String location, String text,
+	public void write(String id, String user,String location, String country, String text,
 			String links, String hashtags, String sentiment,String score) {
-		XContentBuilder contentBuilder = buildJSON(indexRequestBuilder, id, user,location, text, links, hashtags, sentiment,score);
+		XContentBuilder contentBuilder = buildJSON(indexRequestBuilder, id, user,location, country, text, links, hashtags, sentiment,score);
 		indexRequestBuilder.setSource(contentBuilder);
 		IndexResponse indexResponse = indexRequestBuilder.execute().actionGet();
 		LOGGER.info("Wrote to elasticsearch " + indexResponse.toString());
@@ -71,13 +71,14 @@ public class ElasticsearchClient {
 	}
 
 	private XContentBuilder buildJSON(final IndexRequestBuilder indexRequestBuilder, String id, String user,
-			String location,String text, String links, String hashtags, String sentiment, String score) {
+			String location,String country,String text, String links, String hashtags, String sentiment, String score) {
 		XContentBuilder contentBuilder = null;
 		try {
 			contentBuilder = jsonBuilder().startObject().startObject(TWITTER_DOCUMENT);
 			contentBuilder.field("id", id);
 			contentBuilder.field("user", user);
 			contentBuilder.field("location", location);
+			contentBuilder.field("country", country);
 			contentBuilder.field("message", text);
 			contentBuilder.field("links", links);
 			contentBuilder.field("hashtags", hashtags);
@@ -114,10 +115,10 @@ public class ElasticsearchClient {
 			mappingBuilder = XContentFactory.jsonBuilder().startObject().startObject(TWITTER_DOCUMENT)  
 					.field("id", "string")
 					.field("user", "string").field("location", "string")
-					.field("message", "string").field("links", "string")
-					.field("media", "string").field("sentiment","string")
-					.field("score", "string").field("hashtags", "string")
-					.field("timestamp", "long")
+					.field("country", "string").field("message", "string")
+					.field("links", "string").field("media", "string")
+					.field("sentiment","string").field("score", "string")
+					.field("hashtags", "string").field("timestamp", "long")
 					.endObject().endObject()
 					.endObject();
 		} catch (IOException err) {

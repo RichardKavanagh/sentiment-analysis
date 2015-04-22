@@ -2,6 +2,7 @@ package bolts;
 
 import org.apache.log4j.Logger;
 
+import clojure.lang.IFn.LO;
 import twitter4j.Status;
 import values.FieldValue;
 import backtype.storm.task.OutputCollector;
@@ -22,27 +23,41 @@ public class TweetEntityBolt extends BaseBasicBolt {
 	private static final Logger LOGGER = Logger.getLogger(TweetEntityBolt.class);
 	private static final long serialVersionUID = 5508385638081026411L;
 	
-	private String URLs,location = "";
+	private String URLs,location,country = "";
 
 	public void execute(Tuple input, BasicOutputCollector collector) {
 		LOGGER.info("Reached TweetEntity bolt.");
 		Status tweet = (Status) input.getValueByField(FieldValue.TWEET.getString());
 		URLs = getURLEntities(tweet);
 		location = getLocation(tweet);
-		collector.emit(new Values(URLs, location));
+		country = getCountry(tweet);
+		collector.emit(new Values(URLs, location, country));
 	}
 
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
-		declarer.declare(new Fields(FieldValue.URL.getString(), FieldValue.LOCATION.getString()));
+		declarer.declare(new Fields(FieldValue.URL.getString(), FieldValue.LOCATION.getString(), FieldValue.COUNTRY.getString()));
 	}
 	
 	private String getLocation(Status tweet) {
-		if (tweet.getGeoLocation() == null) {
+		try {
+			tweet.getPlace().getName();
+		}
+		catch(NullPointerException err) {
+			LOGGER.info("No location available for tweet");
 			return "";
 		}
-		else {
-			return tweet.getGeoLocation().toString();
+		return tweet.getPlace().getFullName().toString();
+	}
+	
+	private String getCountry(Status tweet) {
+		try {
+			tweet.getPlace().getCountry();
 		}
+		catch(NullPointerException err) {
+			LOGGER.info("No country available for tweet");
+			return "";
+		}
+		return tweet.getPlace().getCountry().toString();
 	}
 
 	private String getURLEntities(Status tweet) {
