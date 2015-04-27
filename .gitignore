@@ -13,7 +13,8 @@ local.properties
 .loadpath
 .project
 input/
- 
+temp/
+
 # External tool builders
 .externalToolBuilders/
  
