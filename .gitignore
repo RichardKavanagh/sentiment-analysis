@@ -12,6 +12,7 @@ local.properties
 .settings/
 .loadpath
 .project
+input/
  
 # External tool builders
 .externalToolBuilders/
@@ -30,7 +31,7 @@ local.properties
  
 # TeXlipse plugin
 .texlipse
- 
+.txt
  
 ### Gradle ###
 .gradle
