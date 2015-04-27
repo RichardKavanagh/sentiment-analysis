@@ -1,0 +1,17 @@
+build/
+bin/
+*.jar
+.gradle
+.classpath
+.settings
+.project
+
+# Debian Files
+*.deb
+
+# IntelliJ Files
+*.iml
+.idea/*
+
+# Ruby Files
+Gemfile.lock
