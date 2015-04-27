@@ -87,6 +87,7 @@ project(":" + rootProject.name +"-topology") {
 		compile 'edu.stanford.nlp:stanford-corenlp:' + stanfordNLPVersion
 		compile 'edu.stanford.nlp:stanford-corenlp:' + stanfordNLPVersion + '-models'
 		compile 'net.sf.opencsv:opencsv:' + csvVersion
+		compile 'org.elasticsearch:elasticsearch:' + elasticsearchVersionTopology
 		
 		testCompile 'junit:junit:' + junitVersion
 		testCompile 'org.jmock:jmock-junit4:' + jmockVersion
@@ -107,7 +108,10 @@ project(":" + rootProject.name +"-classifiers") {
 		compile 'edu.stanford.nlp:stanford-corenlp:' + stanfordNLPVersion
 		compile 'edu.stanford.nlp:stanford-corenlp:' + stanfordNLPVersion + '-models'
 		compile 'net.sf.opencsv:opencsv:' + csvVersion
+		
    		compile 'org.apache.mahout:mahout-core:' + mahoutVersion
+   		compile 'org.elasticsearch:elasticsearch:' + elasticsearchVersionTopology
+   		
    		compile 'com.googlecode.juniversalchardet:juniversalchardet:' + juniversalchardetVersion
    		compile group: 'commons-collections', name: 'commons-collections', version: '3.2'
    		
