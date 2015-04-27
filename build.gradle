@@ -1,0 +1,130 @@
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.2'
+}
+
+
+task makeDeb(type: Exec) {
+	def rootdir = project.getRootDir().toString()
+	group = "Build"
+	description = "Builds a debian package file"
+	commandLine = [
+		"fpm",
+		"-s","dir",
+		"-t","deb",
+		"--name","sentiment-analysis",
+		"--description","Storm topology to perform sentiment-analysis.",
+		"--vendor","DCU",
+		"--maintainer","Richard Kavanagh<richard.kavanagh7@mail.dcu.ie>",
+		"--version",version,
+		"--url","www.richardkavanagh.ie",
+		"--inputs","fpm/config/fpm/package-inputs",
+		"--force",
+		"--before-install","fpm/scripts/installer/before-install.sh",
+		"--after-install","fpm/scripts/installer/after-install.sh"
+	]	
+}
+
+subprojects {
+
+
+	apply plugin: 'java'
+	apply plugin: 'maven'
+	apply plugin: 'eclipse'
+	
+	apply plugin: 'sonar-runner'
+	apply plugin: 'jacoco' 
+
+
+	repositories {
+		mavenCentral()
+			maven {
+			url "http://clojars.org/repo"
+		}
+	}
+	
+	uploadArchives {
+		repositories {
+			flatDir {
+				dirs 'repos'
+			}
+		}
+	}
+	
+	configurations.all {
+	}
+
+	test {
+		systemProperties 'property': 'value'
+	}
+	
+	jacoco {
+		toolVersion = "0.7.1.201405082137"
+	}
+
+	def coverageSourceDirs = [	'../app/src/main/java'	]
+
+	jacocoTestReport {
+	    reports {
+	        xml.enabled false
+	        csv.enabled false
+	        html.destination "${buildDir}/jacocoHtml"
+	    }
+	}
+}
+
+
+project(":" + rootProject.name +"-topology") {
+	dependencies {
+		compile project(":"+rootProject.name+"-classifiers")
+		
+		compile 'org.apache.storm:storm-core:' + stormVersion
+		compile 'com.fasterxml.jackson.core:jackson-core:' + jacksonVersion
+		compile 'com.fasterxml.jackson.core:jackson-databind:' + jacksonVersion
+		compile 'org.twitter4j:twitter4j-core:' + tweet4jVersion
+		compile 'org.twitter4j:twitter4j-stream:' + tweet4jVersion
+		compile 'com.ibm.icu:icu4j:' + icu4jVersion
+		compile 'com.googlecode.juniversalchardet:juniversalchardet:' + juniversalchardetVersion
+		compile 'edu.stanford.nlp:stanford-corenlp:' + stanfordNLPVersion
+		compile 'edu.stanford.nlp:stanford-corenlp:' + stanfordNLPVersion + '-models'
+		compile 'net.sf.opencsv:opencsv:' + csvVersion
+		
+		testCompile 'junit:junit:' + junitVersion
+		testCompile 'org.jmock:jmock-junit4:' + jmockVersion
+		testCompile 'org.jmock:jmock-legacy:' + jmockVersion
+	}
+}
+
+
+
+project(":" + rootProject.name +"-classifiers") {
+	dependencies {
+		compile 'org.apache.storm:storm-core:' + stormVersion
+		compile 'com.fasterxml.jackson.core:jackson-core:' + jacksonVersion
+		compile 'com.fasterxml.jackson.core:jackson-databind:' + jacksonVersion
+		compile 'org.twitter4j:twitter4j-core:' + tweet4jVersion
+		compile 'org.twitter4j:twitter4j-stream:' + tweet4jVersion
+		compile 'com.ibm.icu:icu4j:' + icu4jVersion
+		compile 'edu.stanford.nlp:stanford-corenlp:' + stanfordNLPVersion
+		compile 'edu.stanford.nlp:stanford-corenlp:' + stanfordNLPVersion + '-models'
+		compile 'net.sf.opencsv:opencsv:' + csvVersion
+   		compile 'org.apache.mahout:mahout-core:' + mahoutVersion
+   		compile 'com.googlecode.juniversalchardet:juniversalchardet:' + juniversalchardetVersion
+   		compile group: 'commons-collections', name: 'commons-collections', version: '3.2'
+   		
+   		testCompile 'junit:junit:' + junitVersion
+		testCompile 'org.jmock:jmock-junit4:' + jmockVersion
+		testCompile 'org.jmock:jmock-legacy:' + jmockVersion
+	}
+	
+	sonarRunner() {
+		sonarProperties {
+			property "sonar.host.url", "http://sonar.chewy.ianduffy.ie"
+			property "sonar.projectKey", "sentiment-analysis"
+			property "sonar.projectName", "sentiment-analysis"
+			property "sonar.projectVersion", "V1.0"
+			property "sonar.language", "java"
+			property "sonar.sources", "src/main/java"
+			property "sonar.binaries", "build" 
+		}
+	}
+}

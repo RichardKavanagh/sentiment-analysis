@@ -1,0 +1,3 @@
+include 'topology', 'classifiers', 'common'
+rootProject.name = 'sentiment-analysis'
+rootProject.children.each { it.name = rootProject.name + "-" + it.name }
