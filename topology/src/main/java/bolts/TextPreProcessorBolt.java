@@ -27,7 +27,7 @@ public class TextPreProcessorBolt extends BaseBasicBolt {
 	private static final long serialVersionUID = -8171045339897756375L;
 	
 	private static final String HTTP_DELIMITER = "htt";
-	private static final String RETWEET_DELIMITER = "rt";
+	private static final String RETWEET_DELIMITER = "RT";
 	private static final CharSequence NULL_TEXT = "null";
 	private static final String SPACE = " ";
 	private OutputCollector collector;
@@ -65,7 +65,7 @@ public class TextPreProcessorBolt extends BaseBasicBolt {
 		processedInput = removeNoise(processedInput);
 		return processedInput;
 	}
-	
+
 	private String removeNoise(String processedInput) {
 		return processedInput.replaceAll("[^a-zA-Z\\s]", "").trim().toLowerCase();
 	}

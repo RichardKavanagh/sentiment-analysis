@@ -59,7 +59,7 @@ public class TwitterFilterBolt extends BaseBasicBolt {
 			for (int i = 0; i < tweet.getHashtagEntities().length; i++) {
 				stringBuilder.append(tweet.getHashtagEntities()[i].getText()).append(",");
 			}
-			return stringBuilder.toString();
+			return stringBuilder.toString().substring(0, stringBuilder.length()-1);
 		}
 	}
 }

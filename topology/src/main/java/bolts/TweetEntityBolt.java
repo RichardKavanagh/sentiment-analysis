@@ -2,10 +2,8 @@ package bolts;
 
 import org.apache.log4j.Logger;
 
-import clojure.lang.IFn.LO;
 import twitter4j.Status;
 import values.FieldValue;
-import backtype.storm.task.OutputCollector;
 import backtype.storm.topology.BasicOutputCollector;
 import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.topology.base.BaseBasicBolt;

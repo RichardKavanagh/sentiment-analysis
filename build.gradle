@@ -2,7 +2,6 @@ task wrapper(type: Wrapper) {
     gradleVersion = '2.2'
 }
 
-
 task makeDeb(type: Exec) {
 	def rootdir = project.getRootDir().toString()
 	group = "Build"
@@ -24,24 +23,23 @@ task makeDeb(type: Exec) {
 	]	
 }
 
+
 subprojects {
-
-
+	 
 	apply plugin: 'java'
-	apply plugin: 'maven'
-	apply plugin: 'eclipse'
+	apply plugin: 'eclipse-wtp'
+	apply plugin: 'application'
 	
 	apply plugin: 'sonar-runner'
-	apply plugin: 'jacoco' 
-
-
+	apply plugin: 'jacoco'
+	
 	repositories {
 		mavenCentral()
 			maven {
 			url "http://clojars.org/repo"
 		}
 	}
-	
+
 	uploadArchives {
 		repositories {
 			flatDir {
@@ -50,8 +48,6 @@ subprojects {
 		}
 	}
 	
-	configurations.all {
-	}
 
 	test {
 		systemProperties 'property': 'value'
@@ -70,18 +66,25 @@ subprojects {
 	        html.destination "${buildDir}/jacocoHtml"
 	    }
 	}
+	
+	subprojects.each { subproject -> evaluationDependsOn(subproject.path)}
+	
 }
 
 
 project(":" + rootProject.name +"-topology") {
+	
 	dependencies {
 		compile project(":"+rootProject.name+"-classifiers")
 		
 		compile 'org.apache.storm:storm-core:' + stormVersion
+		
 		compile 'com.fasterxml.jackson.core:jackson-core:' + jacksonVersion
 		compile 'com.fasterxml.jackson.core:jackson-databind:' + jacksonVersion
+		
 		compile 'org.twitter4j:twitter4j-core:' + tweet4jVersion
 		compile 'org.twitter4j:twitter4j-stream:' + tweet4jVersion
+		
 		compile 'com.ibm.icu:icu4j:' + icu4jVersion
 		compile 'com.googlecode.juniversalchardet:juniversalchardet:' + juniversalchardetVersion
 		compile 'edu.stanford.nlp:stanford-corenlp:' + stanfordNLPVersion
@@ -93,17 +96,23 @@ project(":" + rootProject.name +"-topology") {
 		testCompile 'org.jmock:jmock-junit4:' + jmockVersion
 		testCompile 'org.jmock:jmock-legacy:' + jmockVersion
 	}
+	
+	
 }
 
 
-
 project(":" + rootProject.name +"-classifiers") {
+
 	dependencies {
+	
 		compile 'org.apache.storm:storm-core:' + stormVersion
+		
 		compile 'com.fasterxml.jackson.core:jackson-core:' + jacksonVersion
 		compile 'com.fasterxml.jackson.core:jackson-databind:' + jacksonVersion
+		
 		compile 'org.twitter4j:twitter4j-core:' + tweet4jVersion
 		compile 'org.twitter4j:twitter4j-stream:' + tweet4jVersion
+		
 		compile 'com.ibm.icu:icu4j:' + icu4jVersion
 		compile 'edu.stanford.nlp:stanford-corenlp:' + stanfordNLPVersion
 		compile 'edu.stanford.nlp:stanford-corenlp:' + stanfordNLPVersion + '-models'
@@ -132,3 +141,15 @@ project(":" + rootProject.name +"-classifiers") {
 		}
 	}
 }
+
+ 
+task allJar(type: Jar, dependsOn: subprojects.assemble) {
+   zip64 = true
+   baseName = applicationName
+   subprojects.each { subproject -> 
+      from subproject.configurations.archives.allArtifacts.files.collect {
+           zipTree(it)
+       }
+       from subproject.configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+ }

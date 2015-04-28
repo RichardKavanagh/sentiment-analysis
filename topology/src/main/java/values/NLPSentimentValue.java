@@ -8,9 +8,9 @@ package values;
 public enum NLPSentimentValue {
 
 	VERYPOSITIVE("positive"),      
-	POSITIVE("somewhat positive"), 
+	POSITIVE("somewhat_positive"), 
 	VERYNEGATIVE("negative"),  
-	NEGATIVE("somewhat negative"),  
+	NEGATIVE("somewhat_negative"),  
 	NEUTRAL("neutral");    
 
 	private String sentiment;
