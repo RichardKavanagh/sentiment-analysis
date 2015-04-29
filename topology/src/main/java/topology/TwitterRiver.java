@@ -51,6 +51,7 @@ public class TwitterRiver {
 				esConfig.setConfiguration();
 				try {
 					client.writeToTopology(status);
+					System.exit(-1);
 					try {
 						Thread.sleep(1000);
 					} catch (InterruptedException err) {}

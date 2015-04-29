@@ -91,6 +91,7 @@ project(":" + rootProject.name +"-topology") {
 		compile 'edu.stanford.nlp:stanford-corenlp:' + stanfordNLPVersion + '-models'
 		compile 'net.sf.opencsv:opencsv:' + csvVersion
 		compile 'org.elasticsearch:elasticsearch:' + elasticsearchVersionTopology
+		compile 'com.google.code.gson:gson:' + gsonVersion
 		
 		testCompile 'junit:junit:' + junitVersion
 		testCompile 'org.jmock:jmock-junit4:' + jmockVersion

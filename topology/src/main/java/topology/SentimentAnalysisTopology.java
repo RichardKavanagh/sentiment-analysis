@@ -2,6 +2,7 @@ package topology;
 
 import org.apache.log4j.Logger;
 
+
 import spout.TwitterRiverSpout;
 import utils.ThreadPoolServer;
 import values.FieldValue;
@@ -12,6 +13,7 @@ import backtype.storm.generated.AlreadyAliveException;
 import backtype.storm.generated.InvalidTopologyException;
 import backtype.storm.topology.TopologyBuilder;
 import backtype.storm.tuple.Fields;
+import bayes.NaiveBayesClassifier;
 import bolts.StreamSplitterBolt;
 import bolts.TextPreProcessorBolt;
 import bolts.TextSanitizerBolt;
@@ -39,6 +41,8 @@ public class SentimentAnalysisTopology {
 	private static final Logger LOGGER = Logger.getLogger(SentimentAnalysisTopology.class);
 
 	private static String TOPOLOGY_NAME = "SENTIMENT_ANALYSIS";
+	private static final boolean PROD_ENVIROMENT = true;
+	private static final String BAYES_CLASSIFIER = "bayes-classifier";
 	private static int NUM_WORKERS = 5;
 	
 	public static void main(String[] args)  {
@@ -47,11 +51,13 @@ public class SentimentAnalysisTopology {
 		createTopology(builder);
 		
 		Config conf = new Config();
-		conf.setDebug(true);
+		
+		
 		LocalCluster cluster = new LocalCluster();
 
 		if (validCMDLineArgs(args)) {
 			LOGGER.info("Deploying remote storm topology.");
+			setConfig(conf);
 			conf.setNumWorkers(NUM_WORKERS);
 			try {
 				StormSubmitter.submitTopology(TOPOLOGY_NAME, conf, builder.createTopology());
@@ -68,10 +74,6 @@ public class SentimentAnalysisTopology {
 			cluster.killTopology(TOPOLOGY_NAME);
 			cluster.shutdown();
 		}
-	}
-
-	private static boolean validCMDLineArgs(String [] args) {
-		return args != null && args.length > 0;
 	}
 
 	private static void createTopology(TopologyBuilder builder) {
@@ -132,6 +134,17 @@ public class SentimentAnalysisTopology {
 		.fieldsGrouping("sentiment_calculator", new Fields(FieldValue.SENTIMENT.getString()))
 		.fieldsGrouping("nlp_sentiment_calculator", new Fields(FieldValue.SENTIMENT.getString()))
 		.fieldsGrouping("bayes_sentiment_calculator", new Fields(FieldValue.SENTIMENT.getString()));
+	}
+	
+	private static void setConfig(Config conf) {
+		conf.setDebug(true);
+		conf.registerSerialization(NaiveBayesClassifier.class);
+		NaiveBayesClassifier bayesClassifier = new NaiveBayesClassifier(PROD_ENVIROMENT);
+		conf.put(BAYES_CLASSIFIER, bayesClassifier);
+	}
+
+	private static boolean validCMDLineArgs(String [] args) {
+		return args != null && args.length > 0;
 	}
 
 	private static void launchServer() {

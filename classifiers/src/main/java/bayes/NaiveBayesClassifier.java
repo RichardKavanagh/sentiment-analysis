@@ -6,7 +6,9 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.Serializable;
 import java.io.StringReader;
 import java.io.Writer;
 import java.util.HashMap;
@@ -47,9 +49,11 @@ import fields.ModelTrainer;
 /*
  * @author Richard Kavanagh.
  */
-public class NaiveBayesClassifier {
+public class NaiveBayesClassifier implements Serializable  {
+
 
 	private static final Logger LOGGER = Logger.getLogger(NaiveBayesClassifier.class);
+	private static final long serialVersionUID = 3322167178616866699L;
 	
 	@SuppressWarnings("deprecation")
 	private static final Version DOCUMENT_EXTRACTOR = Version.LUCENE_46;
@@ -60,18 +64,20 @@ public class NaiveBayesClassifier {
 	private static final String TWEET_APPEND = "/tweet";
 	private static final String VECTOR_APPEND = "/tfidf-vectors";
 	
-	private static final int POSITIVE_RESULT = 1;
 	private static final int CARDINALITY = 10000;
-	private static final int TEXT_INDEX = 1;
+	
 
-	private static String RAW_DATASET = "/home/richard/Desktop/sentiment-analysis/topology/src/main/resources/exemplar/training.1600000.processed.noemoticon.csv";
+	private static String RAW_DATASET = "/home/richard/workspace/sentiment-analysis/topology/src/main/resources/exemplar/training.1600000.processed.noemoticon.csv";
 	private static String CLEANED_DATASET = "tweets.txt";
+	
+	private boolean PRODUCTION = true;
 	private Configuration bayesConfiguration = new Configuration();
 
 	
-	public NaiveBayesClassifier() {
+	public NaiveBayesClassifier(boolean production) {
 		LOGGER.info("Constructing bayes classifier.");
-		convertData();
+		this.PRODUCTION = production;
+		//convertData();
 		inputDataToSequenceFile();
 		sequenceFileToSparseVector();
 		trainModel();
@@ -164,8 +170,15 @@ public class NaiveBayesClassifier {
 		BufferedReader bufferedReader = null;
 		FileSystem fileSystem = null;
 		Path seqFilePath = null;
+		
 		try {
-			bufferedReader = new BufferedReader(new FileReader(CLEANED_DATASET));
+			
+			if (PRODUCTION) {
+				bufferedReader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("/exemplar/" + CLEANED_DATASET)));
+			}
+			else {
+				bufferedReader = new BufferedReader(new FileReader(CLEANED_DATASET));
+			}
 			fileSystem = FileSystem.getLocal(bayesConfiguration);
 			seqFilePath = new Path(BayesPaths.SEQUENCE_FILE.getString());
 			fileSystem.delete(seqFilePath, false);

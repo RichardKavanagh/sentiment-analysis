@@ -17,7 +17,6 @@ public class NLPSentimentAnalyzer {
 	
 	private static final Logger LOGGER = Logger.getLogger(NLPSentimentAnalyzer.class);
 	
-	private static final String BASE_NLP = "nlp";
 	private static String BASE_PIPELINE_PROPERTIES = "PipeLine.properties";
 	
 	private StanfordCoreNLP pipeline;
@@ -50,4 +49,5 @@ public class NLPSentimentAnalyzer {
 		}
 		return mainSentiment;
 	}
+
 }
