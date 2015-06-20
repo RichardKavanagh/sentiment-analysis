@@ -4,7 +4,6 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import clojure.lang.IFn.L;
 import twitter4j.Status;
 import values.FieldValue;
 import backtype.storm.task.OutputCollector;
@@ -87,6 +86,7 @@ public class TextPreProcessorBolt extends BaseBasicBolt {
 		}
 		return processedInput;
 	}
+	
 
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
 		declarer.declare(new Fields(FieldValue.TWEET.getString(), FieldValue.ID.getString(), FieldValue.USER.getString(),

@@ -9,13 +9,10 @@ import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsResponse;
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.index.IndexResponse;
-import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.joda.time.DateTime;
-import org.elasticsearch.common.joda.time.DateTimeZone;
-import org.elasticsearch.common.joda.time.LocalDate;
-import org.elasticsearch.common.joda.time.format.DateTimeFormatter;
 import org.elasticsearch.common.settings.ImmutableSettings;
+import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
@@ -32,7 +29,7 @@ public class ElasticsearchClient {
 	private static String TWITTER_DOCUMENT = "tweet";
 
 	private IndexRequestBuilder indexRequestBuilder;
-	private Client elasticSearchClient;
+	private TransportClient elasticSearchClient;
 	private String host;
 	private int port;
 
@@ -48,23 +45,32 @@ public class ElasticsearchClient {
 		if (elasticSearchClient == null) {
 			elasticSearchClient = getClient();
 		}
-		final IndicesExistsResponse result = elasticSearchClient.admin().indices().prepareExists(INDEX_NAME).execute().actionGet();
+		final IndicesExistsResponse result = elasticSearchClient.admin()
+				.indices().prepareExists(INDEX_NAME)
+				.execute().actionGet();
 		if (!result.isExists()) {
 			createIndex();
 		}
 		indexRequestBuilder = elasticSearchClient.prepareIndex(INDEX_NAME, TWITTER_DOCUMENT);
+		
+		 
 	}
 
-	public void write(String id, String user,String location, String country, String text,
-			String links, String hashtags, String sentiment,String score) {
+	public void write(String id, String user,String location, String country,
+				String text, String links, String hashtags,
+				String sentiment,String score) {
 		XContentBuilder contentBuilder = buildJSON(indexRequestBuilder, id, user,location, country, text, links, hashtags, sentiment,score);
 		indexRequestBuilder.setSource(contentBuilder);
 		IndexResponse indexResponse = indexRequestBuilder.execute().actionGet();
 		LOGGER.info("Wrote to elasticsearch " + indexResponse.toString());
 	}
 
-	public Client getClient() {
-		final ImmutableSettings.Builder settings = ImmutableSettings.settingsBuilder();
+	public TransportClient getClient() {
+		Settings settings = ImmutableSettings.settingsBuilder()
+				.put("elasticsearch", "elasticsearch")
+				.put("client.transport.nodes_sampler_interval", 20)
+				.put("client.transport.ping_timeout", 20)
+				.build();
 		TransportClient transportClient = new TransportClient(settings);
 		transportClient = transportClient.addTransportAddress(new InetSocketTransportAddress("localhost", 9300));
 		return transportClient;
@@ -100,7 +106,8 @@ public class ElasticsearchClient {
 
 	private void createIndex() {
 		LOGGER.info("Creating elasticsearch index " + INDEX_NAME);
-		final CreateIndexRequestBuilder createIndexRequestBuilder = elasticSearchClient.admin().indices().prepareCreate(INDEX_NAME);
+		final CreateIndexRequestBuilder createIndexRequestBuilder = elasticSearchClient.admin()
+				.indices().prepareCreate(INDEX_NAME);
 		createIndexRequestBuilder.addMapping(TWITTER_DOCUMENT, getMapping());
 		createIndexRequestBuilder.execute().actionGet();
 	}

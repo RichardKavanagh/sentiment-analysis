@@ -25,15 +25,13 @@ public class BayesSentimentBolt extends BaseBasicBolt {
 	private static final Logger LOGGER = Logger.getLogger(BayesSentimentBolt.class);
 	private static final long serialVersionUID = 422962945323672766L;
 	
-	private static final String BAYES_CLASSIFIER = "bayes-classifier";
-
 	private NaiveBayesClassifier bayesClassifier;
 	
 	public void prepare(Map stormConf, TopologyContext context, OutputCollector collector) {
-		bayesClassifier = (NaiveBayesClassifier) stormConf.get(BAYES_CLASSIFIER);
+		LOGGER.info("Training bayes-classifier.");
+		bayesClassifier = new NaiveBayesClassifier(true);
 	}
 	
-
 	public void execute(Tuple input, BasicOutputCollector collector) {
 		LOGGER.info("Reached bayes sentiment bolt.");
 		String status = input.getString(input.fieldIndex(FieldValue.MESSAGE.getString()));

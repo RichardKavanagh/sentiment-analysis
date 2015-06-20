@@ -14,7 +14,7 @@ import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Values;
 
 /*
- * Spout that listens for logstash tcp output at specific port.
+ * Spout that that acts as an entry point into the Topology.
  * 
  * @author Richard Kavanagh.
  */

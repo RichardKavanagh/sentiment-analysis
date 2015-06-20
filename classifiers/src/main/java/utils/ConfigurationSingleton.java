@@ -5,7 +5,7 @@ import utils.ConfigurationValue;
 import com.fasterxml.jackson.databind.JsonNode;
 
 /*
- * Holds the configuration settings stored in ElasticSearch,
+ * Holds the configuration settings stored in elasticsearch,
  * and acts as an access point to this data for the topology.
  * 
  * @author Richard Kavanagh.

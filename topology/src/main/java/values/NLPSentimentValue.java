@@ -1,7 +1,7 @@
 package values;
 
 /**
- * Enum containing the possible sentiment results
+ * Enum containing the possible sentiment results for the nlp model.
  *
  * @author Richard Kavanagh.
  */

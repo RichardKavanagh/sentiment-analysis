@@ -12,7 +12,7 @@ import org.apache.log4j.Logger;
 import twitter4j.Status;
 
 /*
- * A thread pool to handle incoming logstash connections.
+ * A thread pool to handle incoming Twitter connections.
  * 
  * @author Richard Kavanagh.
  */
@@ -22,7 +22,6 @@ public class ThreadPoolServer implements Runnable {
 	
 	protected int SERVER_PORT = 0;
 	protected int THREAD_AMOUNT = 20;
-
 	protected ServerSocket serverSocket = null;
 	protected Thread runningThread = null;
 	protected boolean isStopped = false;

@@ -1,3 +1,4 @@
 include 'topology', 'classifiers'
+
 rootProject.name = 'sentiment-analysis'
 rootProject.children.each { it.name = rootProject.name + "-" + it.name }

@@ -1,7 +1,7 @@
 package fields;
 
 /**
- * Enum containing the various arguments to the ModelTraining code.
+ * Enum containing the various argument values for the bayes model training code.
  *
  * @author Richard Kavanagh.
  */

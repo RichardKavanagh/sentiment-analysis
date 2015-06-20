@@ -57,6 +57,8 @@ public class NaiveBayesClassifier implements Serializable  {
 	
 	@SuppressWarnings("deprecation")
 	private static final Version DOCUMENT_EXTRACTOR = Version.LUCENE_46;
+	private static NaiveBayesClassifier instance = null;
+	private static final boolean PROD_ENVIROMENT = true;
 	
 	private static final String TEXT_FIELD = "text";
 	private static final String TAB_STRING = "\t";
@@ -72,6 +74,14 @@ public class NaiveBayesClassifier implements Serializable  {
 	
 	private boolean PRODUCTION = true;
 	private Configuration bayesConfiguration = new Configuration();
+	
+	
+	public static synchronized NaiveBayesClassifier getInstance() {
+		if(instance == null) {
+			instance = new NaiveBayesClassifier(PROD_ENVIROMENT);
+		}
+		return instance;
+	}
 
 	
 	public NaiveBayesClassifier(boolean production) {
@@ -267,7 +277,6 @@ public class NaiveBayesClassifier implements Serializable  {
 	 *  score is the one the tweet is more likely to be associated to our current input
 	 */
 	private int calculateSentiment(StandardNaiveBayesClassifier classifier, Analyzer analyzer, Vector vector) {
-		LOGGER.info("Calculating sentiment.");
 		Vector resultVector = classifier.classifyFull(vector);
 		double bestScore = -Double.MAX_VALUE;
 		int bestCategoryId = -1;
@@ -280,11 +289,6 @@ public class NaiveBayesClassifier implements Serializable  {
 			if (score > bestScore) {
 				bestScore = score;
 				bestCategoryId = categoryId;
-			}
-			if (categoryId == 1) {
-				System.out.println("Probability of being positive: " + score);
-			} else {
-				System.out.println("Probability of being negative: " + score);
 			}
 		}
 		analyzer.close();

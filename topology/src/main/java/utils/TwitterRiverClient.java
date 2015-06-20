@@ -25,12 +25,13 @@ public class TwitterRiverClient {
 
 	private ObjectOutputStream output;
 
-	public synchronized void writeToTopology(Status status) throws IOException {
+	public void writeToTopology(Status status) throws IOException {
 		Socket socket = new Socket(hostname, port);
 		output = new ObjectOutputStream(socket.getOutputStream());
 		if (FileUtils.supportedEncoding(status.toString())) {
 			output.writeObject(status);
 		}
 		socket.close();
+		output.close();
 	}
 }

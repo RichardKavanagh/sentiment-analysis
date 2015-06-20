@@ -13,7 +13,7 @@ import backtype.storm.tuple.Tuple;
 import backtype.storm.tuple.Values;
 
 /*
- * This bolt will perform sentiment analysis usign stanfords openNLP library.
+ * This bolt will perform sentiment analysis using the stanford nlp library.
  * 
  * @author Richard Kavanagh.
  */

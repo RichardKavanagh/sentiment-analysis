@@ -2,7 +2,6 @@ package topology;
 
 import org.apache.log4j.Logger;
 
-
 import spout.TwitterRiverSpout;
 import utils.ThreadPoolServer;
 import values.FieldValue;
@@ -13,8 +12,8 @@ import backtype.storm.generated.AlreadyAliveException;
 import backtype.storm.generated.InvalidTopologyException;
 import backtype.storm.topology.TopologyBuilder;
 import backtype.storm.tuple.Fields;
-import bayes.NaiveBayesClassifier;
 import bolts.StreamSplitterBolt;
+import bolts.SystemStatusBolt;
 import bolts.TextPreProcessorBolt;
 import bolts.TextSanitizerBolt;
 import bolts.TweetEntityBolt;
@@ -41,23 +40,19 @@ public class SentimentAnalysisTopology {
 	private static final Logger LOGGER = Logger.getLogger(SentimentAnalysisTopology.class);
 
 	private static String TOPOLOGY_NAME = "SENTIMENT_ANALYSIS";
-	private static final boolean PROD_ENVIROMENT = true;
-	private static final String BAYES_CLASSIFIER = "bayes-classifier";
-	private static int NUM_WORKERS = 5;
+	private static int NUM_WORKERS = 1;
 	
 	public static void main(String[] args)  {
 
 		TopologyBuilder builder = new TopologyBuilder();
-		createTopology(builder);
-		
 		Config conf = new Config();
-		
-		
 		LocalCluster cluster = new LocalCluster();
+		
+		setConfig(conf);
+		createTopology(builder);
 
 		if (validCMDLineArgs(args)) {
 			LOGGER.info("Deploying remote storm topology.");
-			setConfig(conf);
 			conf.setNumWorkers(NUM_WORKERS);
 			try {
 				StormSubmitter.submitTopology(TOPOLOGY_NAME, conf, builder.createTopology());
@@ -77,16 +72,17 @@ public class SentimentAnalysisTopology {
 	}
 
 	private static void createTopology(TopologyBuilder builder) {
-		
 		LOGGER.info("Creating Storm topology.");
-		
 		builder.setSpout("twitter_river_spout", new TwitterRiverSpout());
 
 		builder.setBolt("elasticsearch_configuration", new ElasticSearchConfigurationBolt())
 		.shuffleGrouping("twitter_river_spout");
+		
+		builder.setBolt("system_status", new SystemStatusBolt())
+		.shuffleGrouping("elasticsearch_configuration");
 
 		builder.setBolt("instance_filter", new TweetInstanceBolt())
-		.shuffleGrouping("elasticsearch_configuration");
+		.shuffleGrouping("system_status");
 
 		builder.setBolt("twitter_filter", new TwitterFilterBolt())
 		.shuffleGrouping("instance_filter");
@@ -137,10 +133,7 @@ public class SentimentAnalysisTopology {
 	}
 	
 	private static void setConfig(Config conf) {
-		conf.setDebug(true);
-		conf.registerSerialization(NaiveBayesClassifier.class);
-		NaiveBayesClassifier bayesClassifier = new NaiveBayesClassifier(PROD_ENVIROMENT);
-		conf.put(BAYES_CLASSIFIER, bayesClassifier);
+		conf.setDebug(false);
 	}
 
 	private static boolean validCMDLineArgs(String [] args) {
@@ -149,7 +142,7 @@ public class SentimentAnalysisTopology {
 
 	private static void launchServer() {
 		final int port = 7777, threads = 10;
-		while(true){
+		while(true) {
 			ThreadPoolServer server = new ThreadPoolServer(port, threads);
 			server.run();
 		}

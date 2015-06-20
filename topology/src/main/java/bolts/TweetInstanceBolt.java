@@ -26,7 +26,7 @@ public class TweetInstanceBolt extends BaseBasicBolt {
 
 	private HashSet<String> acceptedTweets = new HashSet<String>();
 
-	public synchronized void execute(Tuple input, BasicOutputCollector collector) {
+	public void execute(Tuple input, BasicOutputCollector collector) {
 		Status tweet = (Status) input.getValueByField(FieldValue.TWEET.getString());
 		if (acceptedTweets.contains(tweet.getText())) {
 			LOGGER.info("Tweet already processed, dropping from topology.");
@@ -38,6 +38,13 @@ public class TweetInstanceBolt extends BaseBasicBolt {
 		}
 		else if (ConfigurationSingleton.getInstance().getLimit() < acceptedTweets.size()) {
 			LOGGER.info("Tweet limit has been exceeded, dropping from topology.");
+			return;
+		}
+		else if (tweet.getText().contains("teamfollowback") || tweet.getText().contains("tos")
+					|| tweet.getText().contains("am") 
+					|| tweet.getUser().getName().equals("")) {
+			LOGGER.info("Invalid tweet, tweet4j error, dropping from topology.");
+			return;
 		}
 		else {
 			acceptedTweets.add(tweet.getText());

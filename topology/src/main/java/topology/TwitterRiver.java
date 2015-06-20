@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import org.apache.log4j.Logger;
 
-
 import utils.ConfigurationSingleton;
 import elasticsearch.ElasticSearchConfiguration;
 import twitter4j.FilterQuery;
@@ -30,12 +29,10 @@ public class TwitterRiver {
 	private static final Logger LOGGER = Logger.getLogger(TwitterRiver.class);
 	private static final int MAX_USER_AMOUNT = 5;
 	private static TwitterRiverClient client;
-
 	private static int PORT = 7777;
 	private static String HOST_NAME = "127.0.0.1";
 	
 	private ElasticSearchConfiguration esConfig = new ElasticSearchConfiguration();
-
 
 	public static void main(String[] args) throws InterruptedException {
 		LOGGER.info("Launching Twitter river.");
@@ -51,10 +48,11 @@ public class TwitterRiver {
 				esConfig.setConfiguration();
 				try {
 					client.writeToTopology(status);
-					//System.exit(-1);
 					try {
-						Thread.sleep(1000);
-					} catch (InterruptedException err) {}
+						Thread.sleep(3000);
+					} catch (InterruptedException err) {
+						Thread.currentThread().interrupt();
+					}
 				} catch (IOException e) {
 					LOGGER.info("Error sending status to ThreadPool.");
 				}

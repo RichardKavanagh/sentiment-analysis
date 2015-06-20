@@ -42,7 +42,6 @@ public class StreamSplitterBolt extends BaseBasicBolt {
 		String user = input.getValueByField(FieldValue.USER.getString()).toString();
 		String message = input.getValueByField(FieldValue.MESSAGE.getString()).toString();
 		String hashtags = input.getValueByField(FieldValue.HASHTAG.getString()).toString();
-		
 		String modeOfOperation = getModeOfOperation();
 		
 		if (modeOfOperation.equals(BAG_OF_WORDS)) {
@@ -66,7 +65,6 @@ public class StreamSplitterBolt extends BaseBasicBolt {
 		return ConfigurationSingleton.getInstance().getModeOfOperation();
 	}
 	
-
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
 		declarer.declareStream("elasticSearchStream", new Fields(FieldValue.ID.getString(),FieldValue.USER.getString(),
 				FieldValue.MESSAGE.getString(), FieldValue.HASHTAG.getString()));

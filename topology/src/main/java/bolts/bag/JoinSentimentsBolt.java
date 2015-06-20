@@ -31,8 +31,8 @@ public class JoinSentimentsBolt extends BaseBasicBolt {
 			joinedScore += positiveScore;
 			postiveJoined = true;
 			if (negativeJoined) {
-				collector.emit(new Values(joinedScore));
 				resetFlags();
+				collector.emit(new Values(joinedScore));
 			}
 		}
 		else if (input.contains(FieldValue.NEGATIVE.getString())) {
@@ -40,8 +40,8 @@ public class JoinSentimentsBolt extends BaseBasicBolt {
 			joinedScore -= negativeScore;
 			negativeJoined = true;
 			if (postiveJoined) {
-				collector.emit(new Values(joinedScore));
 				resetFlags();
+				collector.emit(new Values(joinedScore));
 			}
 		}
 		else {

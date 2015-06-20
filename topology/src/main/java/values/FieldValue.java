@@ -1,7 +1,7 @@
 package values;
 
 /**
- * Enum containing the various field names in a Twitter status.
+ * Enum containing the various field names in a Twitter JSON object.
  *
  * @author Richard Kavanagh.
  */
